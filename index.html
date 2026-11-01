@@ -124,7 +124,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .led.g.on{background:var(--lcd);box-shadow:0 0 6px var(--lcd)}
 .panel .lcd{height:26px;line-height:26px;font-size:17px;padding:0 7px}
 .tbl{position:absolute;left:0;right:0;top:56%;bottom:0;z-index:1}
-.covers{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x}
+.covers{position:absolute;inset:0;display:flex;overflow:hidden;scrollbar-width:none;touch-action:pan-y}
 .covers::-webkit-scrollbar{display:none}
 .slot{flex:0 0 100%;scroll-snap-align:center;position:relative;height:100%;overflow:hidden}
 .card{position:absolute;left:50%;top:22px;width:var(--D,330px);height:var(--D,330px);background:#2b2b2b center/cover;
@@ -545,6 +545,31 @@ function renderTracklist(){
   $("innerCard").querySelectorAll("li").forEach(li => li.onclick = () => playAlbum(nowAlbum, +li.dataset.i));
   const tr = t[nowTrackIdx]; setLcd($("trackLcd"), tr ? `${nowTrackIdx + 1}. ${tr.name.toLowerCase()}` : "—");
 }
+/* swipe orizzontale tra copertina e brani, gestito a mano: la busta segue il dito e scatta sulla faccia giusta.
+   (lo scorrimento nativo si bloccava quando si partiva dalla lista dei brani) */
+(() => {
+  const c = $("covers"); let x0 = null, y0 = 0, base = 0, dir = 0, swiped = false;
+  const page = () => Math.round(c.scrollLeft / c.clientWidth);
+  const go = i => c.scrollTo({ left: i * c.clientWidth, behavior: "smooth" });
+  c.addEventListener("pointerdown", e => { x0 = e.clientX; y0 = e.clientY; base = c.scrollLeft; dir = 0; swiped = false; });
+  c.addEventListener("pointermove", e => {
+    if(x0 === null) return; const dx = e.clientX - x0, dy = e.clientY - y0;
+    if(!dir && Math.hypot(dx, dy) > 8) dir = Math.abs(dx) > Math.abs(dy) ? 1 : 2;
+    if(dir === 1){ c.scrollLeft = Math.max(0, Math.min(c.clientWidth, base - dx)); }
+  });
+  const end = e => {
+    if(x0 === null) return; const dx = e.clientX - x0; x0 = null;
+    if(dir !== 1) return;
+    swiped = Math.abs(dx) > 8;
+    const from = Math.round(base / c.clientWidth);
+    go(Math.abs(dx) > 50 ? (dx < 0 ? 1 : 0) : from);
+  };
+  c.addEventListener("pointerup", end);
+  c.addEventListener("pointercancel", () => { if(x0 !== null && dir === 1) go(page()); x0 = null; });
+  // uno swipe non deve contare come tocco (niente disco rimesso via, niente brano avviato)
+  c.addEventListener("click", e => { if(swiped){ e.stopPropagation(); e.preventDefault(); swiped = false; } }, true);
+  document.querySelectorAll(".dots i").forEach((d, i) => { d.style.pointerEvents = "auto"; d.onclick = () => go(i); });
+})();
 $("covers").addEventListener("scroll", () => { const c = $("covers"); const i = Math.round(c.scrollLeft / c.clientWidth);
   document.querySelectorAll(".dots i").forEach((d, k) => d.classList.toggle("on", k === i)); });
 
