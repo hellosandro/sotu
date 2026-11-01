@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#140c07">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SOTU">
+<title>SOTU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wood: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='900'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.07 0.0035' numOctaves='4' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.25 0 0 0 0 0.14 1.5 0 0 0 -0.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23251309'/%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E");
+  --lcd:#5dff7a; --lcd-dim:#1d4a26;
+  --plinth:#181716; --ink:#ece6da; --mute:#8c8478;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0d0805;color:var(--ink);overflow:hidden}
+body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+     overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.app{position:relative;height:100%;max-width:480px;margin:0 auto;overflow:hidden;
+     background:var(--wood) center/cover,#251309}
+.app::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 118px,rgba(0,0,0,.45) 118px 120px,transparent 120px 121px),
+             radial-gradient(120% 80% at 50% 40%,transparent 40%,rgba(0,0,0,.65))}
+.view{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s ease}
+.view.on{opacity:1;pointer-events:auto}
+
+/* ---------- barra superiore ---------- */
+.top{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:10px;
+     padding:calc(env(safe-area-inset-top) + 12px) 16px 10px}
+.ibtn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;
+      background:rgba(20,18,16,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 6px rgba(0,0,0,.5)}
+.ibtn svg{width:16px;height:16px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lcd{flex:1;min-width:0;height:30px;border-radius:6px;background:#06140a;
+     box-shadow:inset 0 2px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.06);
+     font-family:"VT323",monospace;font-size:20px;color:var(--lcd);text-shadow:0 0 6px rgba(93,255,122,.55);
+     line-height:30px;padding:0 10px;overflow:hidden;white-space:nowrap;position:relative}
+.lcd span{display:inline-block}
+.lcd span.run{animation:marquee var(--dur,10s) linear infinite}
+@keyframes marquee{0%,12%{transform:translateX(0)}88%,100%{transform:translateX(var(--shift))}}
+.brand{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;color:var(--mute)}
+
+/* ---------- elenco ---------- */
+#lists .top,#crate .top{background:linear-gradient(rgba(14,8,4,.9),rgba(14,8,4,.6) 70%,transparent)}
+#crate .top{z-index:6}
+.listwrap{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 60px);bottom:0;overflow-y:auto;
+     -webkit-overflow-scrolling:touch;padding:8px 16px calc(env(safe-area-inset-bottom) + 24px)}
+.lst{list-style:none}
+.lst .sec-t{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+     color:rgba(236,230,218,.5);padding:18px 4px 8px}
+.lst .row{display:flex;align-items:center;gap:14px;padding:10px 4px;border-bottom:1px solid rgba(236,230,218,.09);cursor:pointer}
+.lst .row:active{background:rgba(0,0,0,.25)}
+.lst .th{width:52px;height:52px;flex:none;background:#2a211b center/cover;box-shadow:0 4px 10px rgba(0,0,0,.55)}
+.lst .th.sp{display:grid;place-items:center;font-family:"VT323",monospace;font-size:26px;color:var(--lcd);background:#06140a}
+.lst .tx{flex:1;min-width:0}
+.lst .tx b{display:block;font-weight:500;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lst .tx span{display:block;font-size:12px;color:rgba(236,230,218,.55);margin-top:2px}
+.lst .chev{color:rgba(236,230,218,.35);font-size:20px}
+.lst .note{font-size:12px;line-height:1.5;color:rgba(236,230,218,.45);padding:18px 4px 0}
+
+/* ---------- cover flow verticale ---------- */
+#crate .scene{position:absolute;inset:0;
+     perspective:700px;perspective-origin:50% 50%;overflow:hidden;touch-action:none}
+#crate .scene::before{content:"";position:absolute;inset:0;pointer-events:none;
+     background:radial-gradient(70% 55% at 50% 50%,transparent,rgba(8,4,2,.55))}
+.crate{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.sleeve{position:absolute;width:var(--W);height:var(--W);left:calc(var(--W) / -2);top:calc(var(--W) / -2);
+        transform-origin:50% 50%;transform-style:preserve-3d;
+        transition:transform .45s cubic-bezier(.25,.8,.25,1),opacity .45s;will-change:transform}
+.sleeve i{position:absolute;inset:0;background:#222 center/cover;border-radius:1px;
+        backface-visibility:hidden;-webkit-backface-visibility:hidden;
+        box-shadow:0 14px 34px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.07)}
+.sleeve i.b{display:none}
+.sleeve i::after{content:"";position:absolute;inset:0;background:#000;opacity:var(--shade,0);transition:opacity .45s}
+.crate-hint{position:absolute;z-index:6;pointer-events:none;left:0;right:56px;padding-left:56px;bottom:calc(env(safe-area-inset-bottom) + 20px);text-align:center;
+     font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(236,230,218,.5)}
+.count{position:absolute;z-index:6;pointer-events:none;right:18px;bottom:calc(env(safe-area-inset-bottom) + 16px);font-family:"VT323",monospace;font-size:18px;color:rgba(236,230,218,.5)}
+.flow-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:40px;color:rgba(236,230,218,.6);font-size:14px;line-height:1.5}
+
+/* ---------- giradischi ---------- */
+#player .deck{position:absolute;left:0;right:0;top:0;height:56%;overflow:hidden;
+   background:radial-gradient(140% 90% at 30% 50%,#22201e,#141312 70%),var(--plinth);
+   box-shadow:0 14px 30px rgba(0,0,0,.7);z-index:2}
+.deck::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+   background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px)}
+.platter{position:absolute;border-radius:50%;
+   background:radial-gradient(circle,#2b2a28 0 60%,#0d0d0c 60.5% 97%,#4d4b47 97.5%,#191817 99%);
+   box-shadow:0 6px 18px rgba(0,0,0,.8)}
+.disc{position:absolute;border-radius:50%;overflow:hidden}
+.vinyl{position:absolute;inset:0;border-radius:50%;background-color:var(--vc,#111);
+   background-image:
+     radial-gradient(circle,transparent 0 33%,rgba(0,0,0,.35) 33.4% 34.5%,transparent 35%),
+     repeating-radial-gradient(circle,rgba(0,0,0,.28) 0 1px,rgba(255,255,255,.04) 1px 2px,rgba(0,0,0,.12) 2px 3px),
+     radial-gradient(circle,transparent 0 94%,rgba(0,0,0,.55) 97%,rgba(255,255,255,.12) 99%);
+   }
+.vinyl.spin{animation:spin 1.8s linear infinite;animation-play-state:paused}
+.vinyl.spin.go{animation-play-state:running}
+@keyframes spin{to{transform:rotate(360deg)}}
+.label{position:absolute;left:33%;top:33%;width:34%;height:34%;border-radius:50%;
+   background:#333 center/cover;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.label::after{content:"";position:absolute;left:47%;top:47%;width:6%;height:6%;border-radius:50%;
+   background:radial-gradient(circle,#ccc 0 35%,#111 40%)}
+.sheen{position:absolute;inset:0;border-radius:50%;pointer-events:none;
+   background:conic-gradient(from 20deg,transparent 0 8%,rgba(255,255,255,.13) 13%,transparent 20% 50%,rgba(255,255,255,.1) 63%,transparent 70%);
+   mix-blend-mode:screen;-webkit-mask:radial-gradient(circle,transparent 0 34%,#000 35%);mask:radial-gradient(circle,transparent 0 34%,#000 35%)}
+.arm{position:absolute;width:0;height:0;transition:transform 1.4s cubic-bezier(.45,.05,.25,1);z-index:3}
+.arm img{position:absolute;max-width:none;filter:drop-shadow(5px 9px 7px rgba(0,0,0,.65));pointer-events:none}
+.armbase{position:absolute;z-index:2;max-width:none;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.panel{position:absolute;right:14px;bottom:14px;z-index:4;width:150px;padding:10px;border-radius:10px;
+   background:linear-gradient(#2a2927,#1c1b1a);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 6px 16px rgba(0,0,0,.7)}
+.btns{display:flex;justify-content:space-between;margin-bottom:9px}
+.rb{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:radial-gradient(circle at 50% 35%,#3e3d3a,#1a1918 75%);box-shadow:0 2px 4px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.12)}
+.rb:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(0,0,0,.8)}
+.rb svg{width:13px;height:13px;fill:#cfc9bd}
+.led{position:absolute;top:-7px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#3a0f0f}
+.led.on{background:#ff4b3a;box-shadow:0 0 6px #ff4b3a}
+.led.g.on{background:var(--lcd);box-shadow:0 0 6px var(--lcd)}
+.panel .lcd{height:26px;line-height:26px;font-size:17px;padding:0 7px}
+.tbl{position:absolute;left:0;right:0;top:56%;bottom:0;z-index:1}
+.covers{position:absolute;inset:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x}
+.covers::-webkit-scrollbar{display:none}
+.slot{flex:0 0 100%;scroll-snap-align:center;display:grid;place-items:center;padding:18px 0 calc(env(safe-area-inset-bottom) + 18px)}
+.card{width:min(74vw,330px,calc(100% - 40px));aspect-ratio:1;max-height:100%;background:#2b2b2b center/cover;
+      box-shadow:0 18px 30px rgba(0,0,0,.7),0 2px 4px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.05);transform:rotate(-1.2deg)}
+.inner{background:#e9e0cf;color:#2b231a;padding:16px 16px;overflow:auto;transform:rotate(.8deg);touch-action:pan-y;
+       font-family:"IBM Plex Mono",monospace;font-size:12px}
+.inner h3{font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:2px}
+.inner p.a{font-size:11px;color:#7a6d5c;margin-bottom:12px;letter-spacing:.06em}
+.inner ol{list-style:none}
+.inner li{display:flex;gap:10px;padding:5px 0;border-bottom:1px dashed rgba(43,35,26,.18);cursor:pointer}
+.inner li b{font-weight:400;width:20px;color:#9a8c78;flex:none}
+.inner li.on{font-weight:500}
+.inner li.on b{color:#b0412e}
+.dots{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 6px);display:flex;justify-content:center;gap:6px;pointer-events:none}
+.dots i{width:5px;height:5px;border-radius:50%;background:rgba(236,230,218,.3)}
+.dots i.on{background:rgba(236,230,218,.85)}
+
+/* ---------- volo busta → vinile ---------- */
+#flight{position:absolute;inset:0;z-index:20;pointer-events:none;perspective:1200px}
+.fl{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.fl-sleeve{transform-style:preserve-3d;touch-action:pan-y}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#222 center/cover;
+      box-shadow:0 24px 50px rgba(0,0,0,.7)}
+.face.back{transform:rotateY(180deg);background:linear-gradient(160deg,#2a2723,#191714);color:#d8d0c2;padding:7% 7% 14%;
+      font-family:"IBM Plex Mono",monospace;font-size:clamp(10px,3vw,12.5px);line-height:1.45;overflow:hidden}
+.face.back h4{font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:1.05em;margin-bottom:.2em}
+.face.back .a{color:#8f8676;margin-bottom:1.2em}
+.face.back .bc{position:absolute;right:7%;bottom:7%;width:22%;height:9%;
+      background:repeating-linear-gradient(90deg,#d8d0c2 0 1px,transparent 1px 3px,#d8d0c2 3px 5px,transparent 5px 6px)}
+
+/* ---------- disco sollevato ---------- */
+#lift{position:absolute;inset:0;z-index:15;opacity:0;pointer-events:none;transition:opacity .35s}
+#lift.on{opacity:1;pointer-events:auto}
+#lift .dim{position:absolute;inset:0;background:rgba(8,5,3,.74);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.lift-ui{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:12px;padding:0 20px}
+.lift-ui button{border-radius:999px;padding:14px 30px;font-weight:600;font-size:15px}
+.lift-ui .ghost{color:var(--ink);box-shadow:inset 0 0 0 1px rgba(236,230,218,.35)}
+.lift-ui .go{background:var(--ink);color:#140c07;display:flex;align-items:center;gap:8px}
+.lift-ui .go svg{width:12px;height:12px;fill:currentColor}
+.lift-hint{position:absolute;left:0;right:0;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:10px;
+     letter-spacing:.18em;text-transform:uppercase;color:rgba(236,230,218,.5)}
+.face.back ol{list-style:none;margin:0}
+.face.back li{display:flex;gap:.8em;padding:.32em 0;border-bottom:1px dashed rgba(216,208,194,.14);cursor:pointer}
+.face.back li b{font-weight:400;color:#8f8676;flex:none;width:1.6em}
+.face.back li:active{color:#fff}
+.face.back li.pl{color:#fff;font-weight:500}
+.face.back li.pl b{color:var(--lcd)}
+.face.back.scroll{overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+
+/* ---------- accesso ---------- */
+#gate{display:flex;flex-direction:column;justify-content:center;padding:32px 28px;background:rgba(10,6,3,.55)}
+#gate .logo{font-family:"VT323",monospace;font-size:64px;line-height:1;color:var(--lcd);text-shadow:0 0 14px rgba(93,255,122,.5)}
+#gate .sub{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin:10px 0 36px}
+#gate p{color:#cfc7b8;max-width:32ch;line-height:1.5;margin-bottom:22px}
+#gate label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+#gate input{display:block;width:100%;margin:8px 0 6px;font:14px "IBM Plex Mono",monospace;color:var(--ink);background:transparent;
+            border:0;border-bottom:1px solid #5a4a3a;padding:8px 0;outline:none;user-select:text;-webkit-user-select:text}
+#gate code{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#cfc7b8;word-break:break-all}
+.pill{display:inline-block;margin-top:24px;background:var(--ink);color:#140c07;border-radius:999px;padding:13px 24px;font-weight:600}
+.small{font-size:12px;color:var(--mute);margin-top:16px}
+.small button{text-decoration:underline;text-underline-offset:3px}
+.sec{display:none}.sec.on{display:block}
+
+#toast{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 16px);z-index:30;
+       background:rgba(18,16,14,.95);border:1px solid #3a332b;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.4;
+       color:#e9e2d4;transform:translateY(140%);transition:transform .35s ease}
+#toast.on{transform:none}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font-family:"VT323",monospace;font-size:22px;color:var(--lcd)}
+@media (prefers-reduced-motion: reduce){.sleeve{transition:none}.vinyl.spin{animation-duration:6s}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ACCESSO -->
+  <section class="view" id="gate">
+    <div class="logo">SOTU</div>
+    <div class="sub">Sound of the Universe · vinyl player</div>
+    <div class="sec" id="gSetup">
+      <p>Prima volta qui. Incolla il Client ID della tua app Spotify.</p>
+      <label for="cid">Client ID</label>
+      <input id="cid" autocomplete="off" spellcheck="false" placeholder="es. 3f9a…">
+      <div class="small">Redirect URI da usare su Spotify:<br><code id="ruri"></code></div>
+      <button class="pill" id="saveCid">Salva e continua</button>
+    </div>
+    <div class="sec" id="gLogin">
+      <p id="gMsg">Accedi con Spotify per sfogliare la tua musica.</p>
+      <button class="pill" id="loginBtn">Accedi con Spotify</button>
+      <div class="small"><button id="resetCid">Cambia Client ID</button></div>
+    </div>
+  </section>
+
+  <!-- ELENCO -->
+  <section class="view" id="lists">
+    <div class="top">
+      <button class="ibtn" id="logoutBtn" aria-label="Esci"><svg viewBox="0 0 16 16"><path d="M10 3H4v10h6M8 8h6M11.5 5.5L14 8l-2.5 2.5"/></svg></button>
+      <div class="lcd" id="listLcd"><span>SOTU · LA TUA MUSICA</span></div>
+      <button class="ibtn" id="toPlayer2" aria-label="Giradischi" style="visibility:hidden"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.5"/></svg></button>
+    </div>
+    <div class="listwrap"><ul class="lst" id="lst"></ul></div>
+  </section>
+
+  <!-- COVER FLOW -->
+  <section class="view" id="crate">
+    <div class="top">
+      <button class="ibtn" id="toLists" aria-label="Elenco"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button>
+      <div class="lcd" id="crateLcd"><span>SOTU</span></div>
+      <button class="ibtn" id="toPlayer" aria-label="Giradischi" style="visibility:hidden"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.5"/></svg></button>
+    </div>
+    <div class="scene" id="scene">
+      <div class="crate" id="crateEl"></div>
+    </div>
+    <div class="crate-hint" id="hint">Scorri · tocca il centro</div>
+    <div class="count" id="count"></div>
+  </section>
+
+  <!-- GIRADISCHI -->
+  <section class="view" id="player">
+    <div class="deck" id="deck">
+      <div class="platter" id="platter"></div>
+      <div class="disc" id="disc"><div class="vinyl spin" id="vinyl"><div class="label" id="label"></div></div><div class="sheen"></div></div>
+      <img class="armbase" id="armbase" src="arm-base.svg" alt="">
+      <div class="arm" id="arm"><img id="armImg" src="arm-move.svg" alt=""></div>
+      <div class="panel">
+        <div class="btns">
+          <button class="rb" id="prevBtn" aria-label="Precedente"><svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg></button>
+          <button class="rb" id="ppBtn" aria-label="Play/Pausa"><i class="led" id="led"></i><svg viewBox="0 0 16 16" id="ppIcon"></svg></button>
+          <button class="rb" id="nextBtn" aria-label="Successivo"><i class="led g on"></i><svg viewBox="0 0 16 16"><path d="M11 2h2v12h-2zM2 2v12l8-6z"/></svg></button>
+        </div>
+        <div class="lcd" id="trackLcd"><span>—</span></div>
+      </div>
+      <div class="top" style="padding-right:0;width:auto">
+        <button class="ibtn" id="backBtn" aria-label="Torna alla cassa"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button>
+      </div>
+    </div>
+    <div class="tbl">
+      <div class="covers" id="covers">
+        <div class="slot"><div class="card" id="coverCard"></div></div>
+        <div class="slot"><div class="card inner" id="innerCard"></div></div>
+      </div>
+      <div class="dots"><i class="on"></i><i></i></div>
+    </div>
+  </section>
+
+  <div id="lift">
+    <div class="dim"></div>
+    <div class="top"><button class="ibtn" id="putBack" aria-label="Indietro"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button></div>
+    <div class="lift-hint" id="liftHint">Scorri di lato per girarla</div>
+    <div class="lift-ui" id="liftUi">
+      <button class="go" id="playIt"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg>Ascolta</button>
+    </div>
+  </div>
+  <div id="flight"></div>
+  <div class="loading" id="loading">caricamento…</div>
+  <div id="toast"></div>
+</div>
+
+<script>
+/* ============================================================
+   SOTU — vinyl player per Spotify (uso personale)
+   ============================================================ */
+const API = "https://api.spotify.com/v1";
+const SCOPES = "streaming user-read-email user-read-private user-library-read playlist-read-private playlist-read-collaborative user-read-playback-state user-modify-playback-state";
+const REDIRECT = location.origin + location.pathname;
+const DEMO = new URLSearchParams(location.search).has("demo");
+/* sui telefoni il player nel browser di Spotify non è supportato: si comanda l'app Spotify */
+const MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const store = {
+  get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
+  set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k) }catch(e){} }
+};
+
+/* ---------- viste ---------- */
+function view(id){ ["gate","lists","crate","player"].forEach(v => $(v).classList.toggle("on", v === id)); }
+let toastT;
+function toast(t, ms = 5000){ const el = $("toast"); el.textContent = t; el.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), ms); }
+function setLcd(el, text){
+  const span = el.querySelector("span"); span.textContent = text; span.classList.remove("run");
+  requestAnimationFrame(() => {
+    const over = span.scrollWidth - (el.clientWidth - 20);
+    if(over > 0){ span.style.setProperty("--shift", -over + "px"); span.style.setProperty("--dur", Math.max(6, over / 18) + "s"); span.classList.add("run"); }
+  });
+}
+
+/* ---------- accesso Spotify (PKCE) ---------- */
+function randStr(n){ const a = new Uint8Array(n); crypto.getRandomValues(a);
+  return Array.from(a, b => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[b % 62]).join(""); }
+async function challenge(v){
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(v));
+  return btoa(String.fromCharCode(...new Uint8Array(d))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+async function login(){
+  const verifier = randStr(64); store.set("pkce_verifier", verifier);
+  const p = new URLSearchParams({ client_id: store.get("client_id"), response_type: "code", redirect_uri: REDIRECT,
+    scope: SCOPES, code_challenge_method: "S256", code_challenge: await challenge(verifier) });
+  location.href = "https://accounts.spotify.com/authorize?" + p;
+}
+async function tokenRequest(body){
+  const r = await fetch("https://accounts.spotify.com/api/token", { method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"}, body: new URLSearchParams(body) });
+  const j = await r.json();
+  if(!r.ok) throw new Error(j.error_description || j.error || "Errore di accesso");
+  store.set("access_token", j.access_token);
+  store.set("expires_at", String(Date.now() + (j.expires_in - 60) * 1000));
+  if(j.refresh_token) store.set("refresh_token", j.refresh_token);
+  if(j.scope) store.set("scope", j.scope);
+}
+async function getToken(){
+  if(Date.now() < +store.get("expires_at")) return store.get("access_token");
+  const rt = store.get("refresh_token"); if(!rt) throw new Error("Sessione scaduta");
+  await tokenRequest({ grant_type: "refresh_token", refresh_token: rt, client_id: store.get("client_id") });
+  return store.get("access_token");
+}
+async function api(path, opts = {}){
+  const r = await fetch(API + path, { ...opts, headers: { Authorization: "Bearer " + await getToken(),
+    ...(opts.body ? {"Content-Type": "application/json"} : {}) } });
+  if(r.status === 204 || r.status === 202) return null;
+  const txt = await r.text(); let j = null; try{ j = txt ? JSON.parse(txt) : null }catch(e){}
+  if(!r.ok){ const e = new Error(j?.error?.message || ("Errore " + r.status)); e.status = r.status; throw e; }
+  return j;
+}
+const hasScopes = () => { const s = store.get("scope") || ""; return SCOPES.split(" ").every(x => s.includes(x)); };
+function clearSession(){ ["access_token","refresh_token","expires_at","scope"].forEach(store.del); }
+
+/* ---------- dati ---------- */
+let albums = [], me = null, curList = null;
+/* raggruppa i brani per album: ogni album è un disco intero */
+function groupByAlbum(tracks){
+  const m = new Map();
+  for(const t of tracks){
+    if(!t || t.type !== "track" || !t.album || t.is_local) continue;
+    const id = t.album.id || t.album.name;
+    if(!m.has(id)) m.set(id, { ...t.album, plTracks: [] });
+    m.get(id).plTracks.push(t.id || t.name);
+  }
+  return [...m.values()];
+}
+async function pageAll(path, max, pick){
+  const out = [];
+  for(let off = 0; off < max; off += 50){
+    const j = await api(`${path}${path.includes("?") ? "&" : "?"}limit=50&offset=${off}`);
+    out.push(...j.items.map(pick).filter(Boolean));
+    if(!j.next) break;
+  }
+  return out;
+}
+async function loadList(entry){
+  if(DEMO){ return entry.kind === "albums" ? demoAlbums() : demoAlbums().slice().reverse().map(a => ({ ...a, plTracks: [a.tracks.items[1].name] })); }
+  if(entry.kind === "albums") return pageAll("/me/albums", 400, x => x.album);
+  if(entry.kind === "liked") return groupByAlbum(await pageAll("/me/tracks", 1000, x => x.track));
+  return groupByAlbum(await pageAll(`/playlists/${entry.id}/items`, 1000, x => x.item || x.track));
+}
+async function ensureTracks(al){
+  if(al.tracks?.items?.length) return al;
+  try{ const j = await api(`/albums/${al.id}`); al.tracks = j.tracks; if(!al.release_date) al.release_date = j.release_date; }
+  catch(e){ al.tracks = { items: [] }; }
+  return al;
+}
+const img = (al, big) => { const im = al.images || []; return (big ? im[0] : (im[1] || im[0]))?.url || ""; };
+const artists = al => (al.artists || []).map(a => a.name).join(", ");
+
+/* ---------- colore del vinile ricavato dalla copertina ---------- */
+const colorCache = {};
+function vinylColor(url){
+  if(colorCache[url]) return Promise.resolve(colorCache[url]);
+  return new Promise(res => {
+    const im = new Image(); im.crossOrigin = "anonymous";
+    im.onload = () => { try{
+        const c = document.createElement("canvas"); c.width = c.height = 12; const x = c.getContext("2d");
+        x.drawImage(im, 0, 0, 12, 12); const d = x.getImageData(0, 0, 12, 12).data;
+        let best = null, bs = -1, sum = [0,0,0];
+        for(let i = 0; i < d.length; i += 4){
+          const [r,g,b] = [d[i],d[i+1],d[i+2]]; sum[0]+=r; sum[1]+=g; sum[2]+=b;
+          const mx = Math.max(r,g,b), mn = Math.min(r,g,b), s = mx ? (mx-mn)/mx : 0, score = s * (mx/255);
+          if(score > bs){ bs = score; best = [r,g,b]; }
+        }
+        let col = bs > .28 ? best : sum.map(v => v / 144);
+        if(bs <= .28) col = col.map(v => v * .35);           // copertina poco colorata → vinile scuro
+        const out = `rgb(${col.map(v => Math.round(v * .82)).join(",")})`;
+        colorCache[url] = out; res(out);
+      }catch(e){ res("#111") } };
+    im.onerror = () => res("#111"); im.src = url;
+  });
+}
+
+/* ============================================================
+   CASSA
+   ============================================================ */
+let cur = 0, W = 300;
+const scene = $("scene"), crateEl = $("crateEl");
+let sleeveEls = new Map();
+
+function layoutCrate(){
+  const r = scene.getBoundingClientRect();
+  W = Math.round(Math.min(r.width * .72, 320, r.height * .3));
+  $("app").style.setProperty("--W", W + "px");
+  renderCrate();
+}
+/* Cover Flow verticale: la copertina scelta è dritta al centro;
+   quelle sopra e sotto sono ruotate sull'asse orizzontale, rivolte verso il centro. */
+function sleeveTransform(rel){
+  const a = Math.abs(rel), sg = Math.sign(rel);
+  if(rel === 0) return { t: `translateZ(0px)`, o: 1, s: 0, z: 100 };
+  // la prima vicina: stacco dal centro, inclinata, ben visibile; le altre più fitte dietro
+  const y = sg * (W * 1.0 + (a - 1) * W * .15);
+  return { t: `translateY(${y}px) translateZ(${-W * .62 - (a - 1) * 6}px) rotateX(${sg * 58}deg)`,
+           o: a > 12 ? 0 : 1, s: Math.min(.72, .12 + (a - 1) * .09), z: 100 - a };
+}
+function renderCrate(){
+  const lo = Math.max(0, cur - 13), hi = Math.min(albums.length - 1, cur + 13);
+  for(const [i, el] of sleeveEls){ if(i < lo || i > hi){ el.remove(); sleeveEls.delete(i); } }
+  for(let i = lo; i <= hi; i++){
+    let el = sleeveEls.get(i);
+    if(!el){ el = document.createElement("div"); el.className = "sleeve"; const u = `url("${img(albums[i])}")`;
+      el.innerHTML = `<i class="f" style='background-image:${u}'></i><i class="b" style='background-image:${u}'></i>`;
+      el.dataset.i = i; crateEl.appendChild(el); sleeveEls.set(i, el); }
+    const rel = i - cur, st = sleeveTransform(rel);
+    el.style.transform = st.t; el.style.opacity = st.o; el.style.setProperty("--shade", st.s);
+    el.style.zIndex = st.z;
+    el.classList.toggle("cur", rel === 0);
+  }
+  if(!albums.length) return;
+  const al = albums[cur];
+  if(al){ setLcd($("crateLcd"), `${artists(al)} — ${al.name}`.toUpperCase()); $("count").textContent = `${cur + 1}/${albums.length}`; }
+}
+function step(d){
+  const n = Math.max(0, Math.min(albums.length - 1, cur + d));
+  if(n !== cur){ cur = n; renderCrate(); if(navigator.vibrate) navigator.vibrate(4); }
+}
+/* gesti: trascina su/giù, rotella, frecce */
+(() => {
+  let y0 = null, acc = 0, moved = 0, downT = 0;
+  scene.addEventListener("pointerdown", e => { y0 = e.clientY; acc = 0; moved = 0; downT = Date.now(); scene.setPointerCapture(e.pointerId); });
+  scene.addEventListener("pointermove", e => { if(y0 === null) return; const dy = e.clientY - y0; y0 = e.clientY;
+    acc += dy; moved += Math.abs(dy); const th = 34; while(acc > th){ step(-1); acc -= th; } while(acc < -th){ step(1); acc += th; } });
+  scene.addEventListener("pointerup", e => { const tap = moved < 8 && Date.now() - downT < 500; y0 = null;
+    if(tap && albums.length){
+      const hit = document.elementsFromPoint(e.clientX, e.clientY).map(n => n.closest && n.closest(".sleeve")).find(Boolean);
+      if(hit){ const i = +hit.dataset.i; if(i === cur) pick(cur); else { cur = i; renderCrate(); } }
+    } });
+  let wacc = 0;
+  scene.addEventListener("wheel", e => { e.preventDefault(); wacc += e.deltaY; while(wacc > 40){ step(1); wacc -= 40; } while(wacc < -40){ step(-1); wacc += 40; } }, {passive:false});
+  addEventListener("keydown", e => { if(!$("crate").classList.contains("on")) return;
+    if(e.key === "Backspace" && !L) openLists();
+    if(e.key === "ArrowDown") step(1); if(e.key === "ArrowUp") step(-1); if(e.key === "Enter") (L ? toTurntable(startIdx(L.al)) : pick(cur)); if(e.key === "Escape") putBack(); });
+})();
+
+/* ============================================================
+   GIRADISCHI
+   ============================================================ */
+const deck = $("deck"), arm = $("arm");
+let G = {}; // geometria
+let nowAlbum = null, nowTrackIdx = 0, playing = false, progress = 0, duration = 1, progT = 0;
+
+/* il braccio viene dal disegno SVG (viewBox 100×75.2):
+   perno in (79.2, 19.4), puntina a 48.35 unità, inclinazione del disegno 27.5° */
+const ARM = { px: 79.2, py: 19.4, tip: 48.35, a0: 27.5 };
+function layoutDeck(){
+  const w = deck.clientWidth, h = deck.clientHeight;
+  // disco grande, centro quasi sul bordo sinistro: si vede poco più di metà
+  const R = Math.round(Math.min(h * .47, w * .62)), D = R * 2;
+  const C = { x: Math.round(w * .04), y: Math.round(h * .47) };
+  const P = { x: Math.round(w * .74), y: Math.round(h * .28) };
+  const dist = Math.hypot(C.x - P.x, C.y - P.y);
+  const L = Math.round(dist * 1.19);
+  const k = (L * .985) / ARM.tip;                       // pixel per unità del disegno
+  G = { w, h, D, R, C, P, L, dist, k };
+  Object.assign($("platter").style, { width: D*1.04 + "px", height: D*1.04 + "px", left: C.x - D*.52 + "px", top: C.y - D*.52 + "px" });
+  Object.assign($("disc").style, { width: D + "px", height: D + "px", left: C.x - R + "px", top: C.y - R + "px" });
+  const size = { width: 100 * k + "px", height: 75.2 * k + "px" };
+  Object.assign($("armbase").style, size, { left: P.x - ARM.px * k + "px", top: P.y - ARM.py * k + "px" });
+  Object.assign($("armImg").style, size, { left: -ARM.px * k + "px", top: -ARM.py * k + "px" });
+  arm.style.left = P.x + "px"; arm.style.top = P.y + "px";
+  updateArm(true);
+}
+/* angolo del braccio perché la puntina tocchi il raggio r del disco */
+function armAngleFor(r){
+  const { P, C, L } = G; const tipOff = L * .985;
+  const d = Math.hypot(C.x - P.x, C.y - P.y);
+  const a = (tipOff*tipOff - r*r + d*d) / (2*d); const hh = Math.sqrt(Math.max(0, tipOff*tipOff - a*a));
+  const ux = (C.x - P.x)/d, uy = (C.y - P.y)/d, bx = P.x + a*ux, by = P.y + a*uy;
+  const c1 = { x: bx - hh*uy, y: by + hh*ux }, c2 = { x: bx + hh*uy, y: by - hh*ux };
+  const tip = c1.y > c2.y ? c1 : c2;
+  return -Math.atan2(tip.x - P.x, tip.y - P.y) * 180 / Math.PI;
+}
+function updateArm(instant){
+  if(!G.L) return;
+  let ang = armAngleFor(G.R * 1.12);                     // a riposo, appena fuori dal disco
+  if(nowAlbum && playing){ const f = Math.min(1, Math.max(0, progress / duration)); ang = armAngleFor(G.R * (.92 - .42 * f)); }
+
+  if(instant){ arm.style.transition = "none"; requestAnimationFrame(() => arm.style.transition = ""); }
+  arm.style.transform = `rotate(${ang - ARM.a0}deg)`;
+}
+const ICON_PLAY = '<path d="M4 2l10 6-10 6z"/>', ICON_PAUSE = '<path d="M3 2h4v12H3zM9 2h4v12H9z"/>';
+function renderPlayState(){
+  $("vinyl").classList.toggle("go", playing);
+  $("ppIcon").innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
+  $("led").classList.toggle("on", playing);
+  updateArm();
+}
+async function setPlayerAlbum(al){
+  nowAlbum = al;
+  $("label").style.backgroundImage = `url("${img(al, true)}")`;
+  $("coverCard").style.backgroundImage = `url("${img(al, true)}")`;
+  $("vinyl").style.setProperty("--vc", await vinylColor(img(al, true)));
+  renderTracklist();
+  $("toPlayer").style.visibility = "visible"; $("toPlayer2").style.visibility = "visible";
+}
+function tracksOf(al){ return (al.tracks?.items || []); }
+function renderTracklist(){
+  const al = nowAlbum; if(!al) return;
+  const t = tracksOf(al);
+  $("innerCard").innerHTML = `<h3>${esc(al.name)}</h3><p class="a">${esc(artists(al))}${al.release_date ? " · " + esc(al.release_date.slice(0,4)) : ""}</p>
+    <ol>${t.map((x,i) => `<li data-i="${i}" class="${i === nowTrackIdx ? "on" : ""}"><b>${String(i+1).padStart(2,"0")}</b><span>${esc(x.name)}</span></li>`).join("")}</ol>`;
+  $("innerCard").querySelectorAll("li").forEach(li => li.onclick = () => playAlbum(nowAlbum, +li.dataset.i));
+  const tr = t[nowTrackIdx]; setLcd($("trackLcd"), tr ? `${nowTrackIdx + 1}. ${tr.name.toLowerCase()}` : "—");
+}
+$("covers").addEventListener("scroll", () => { const c = $("covers"); const i = Math.round(c.scrollLeft / c.clientWidth);
+  document.querySelectorAll(".dots i").forEach((d, k) => d.classList.toggle("on", k === i)); });
+
+/* ---------- riproduzione ---------- */
+let sdkPlayer = null, sdkDeviceId = null, curDevice = null;
+function loadSDK(){
+  if(DEMO || MOBILE) return;
+  window.onSpotifyWebPlaybackSDKReady = () => {
+    sdkPlayer = new Spotify.Player({ name: "SOTU", volume: .8, getOAuthToken: cb => getToken().then(cb) });
+    sdkPlayer.addListener("ready", ({device_id}) => { sdkDeviceId = device_id; });
+    sdkPlayer.addListener("not_ready", () => { sdkDeviceId = null; });
+    sdkPlayer.addListener("player_state_changed", s => { if(s) applyState({ is_playing: !s.paused, progress_ms: s.position,
+      item: s.track_window.current_track, context: s.context }); });
+    sdkPlayer.addListener("initialization_error", () => { sdkPlayer = null; sdkDeviceId = null; });
+    const drmHelp = "Il browser non riesce a suonare l'audio protetto di Spotify. In Zen o Firefox: Impostazioni › Generale › attiva \"Riproduci contenuti protetti da DRM\" e ricarica. Oppure apri l'app Spotify sul Mac: la musica andrà lì.";
+    sdkPlayer.addListener("playback_error", () => toast(drmHelp, 12000));
+    sdkPlayer.addListener("autoplay_failed", () => toast("Il browser ha bloccato l'avvio automatico: tocca play sul giradischi.", 6000));
+    sdkPlayer.addListener("account_error", () => toast("Serve un account Spotify Premium per suonare nel browser.", 8000));
+    sdkPlayer.connect();
+  };
+  const s = document.createElement("script"); s.src = "https://sdk.scdn.co/spotify-player.js"; document.body.appendChild(s);
+}
+async function pickDevice(){
+  const { devices } = await api("/me/player/devices");
+  // prima l'app Spotify già attiva (telefono o computer), poi il player nel browser
+  const app = devices.find(x => x.is_active && x.id !== sdkDeviceId && x.name !== "SOTU");
+  if(app) return app.id;
+  if(sdkDeviceId) return sdkDeviceId;
+  const d = devices.find(x => x.is_active) || (MOBILE && devices.find(x => x.type === "Smartphone")) || devices.find(x => x.name !== "SOTU") || devices[0];
+  if(!d) throw new Error("Apri l'app Spotify sul telefono, fai partire un brano qualsiasi, poi torna qui e tocca di nuovo play.");
+  return d.id;
+}
+async function playAlbum(al, idx = 0){
+  nowTrackIdx = idx; renderTracklist();
+  if(DEMO){ playing = true; progress = 0; duration = 200000; progT = Date.now(); renderPlayState(); return; }
+  try{
+    if(sdkPlayer?.activateElement) sdkPlayer.activateElement();
+    const id = await pickDevice(); curDevice = id;
+    // un disco si ascolta in ordine: niente riproduzione casuale
+    const noShuffle = () => api(`/me/player/shuffle?state=false&device_id=${encodeURIComponent(id)}`, { method: "PUT" }).catch(() => {});
+    await noShuffle();
+    await api("/me/player/play?device_id=" + encodeURIComponent(id), { method: "PUT",
+      body: JSON.stringify({ context_uri: al.uri, offset: { position: idx } }) });
+    noShuffle();
+    playing = true; progress = 0; duration = tracksOf(al)[idx]?.duration_ms || 1; progT = Date.now(); renderPlayState();
+    setTimeout(poll, 1200);
+  }catch(e){ playing = false; renderPlayState(); toast(e.message); }
+}
+async function togglePlay(){
+  if(!nowAlbum) return;
+  if(DEMO){ playing = !playing; progT = Date.now(); renderPlayState(); return; }
+  try{
+    if(sdkPlayer && sdkDeviceId && curDevice === sdkDeviceId){ await sdkPlayer.togglePlay(); return; }
+    await api("/me/player/" + (playing ? "pause" : "play"), { method: "PUT" });
+    playing = !playing; progT = Date.now(); renderPlayState();
+  }catch(e){
+    if(!playing && e.status === 404){ playAlbum(nowAlbum, nowTrackIdx); return; }
+    toast(e.message);
+  }
+}
+async function skip(dir){
+  if(!nowAlbum) return;
+  const n = tracksOf(nowAlbum).length;
+  if(DEMO){ nowTrackIdx = (nowTrackIdx + dir + n) % n; progress = 0; progT = Date.now(); renderTracklist(); updateArm(); return; }
+  try{ await api("/me/player/" + (dir > 0 ? "next" : "previous"), { method: "POST" }); setTimeout(poll, 600); }
+  catch(e){ toast(e.message); }
+}
+function applyState(s){
+  if(!s || !s.item) return;
+  playing = !!s.is_playing; progress = s.progress_ms || 0; duration = s.item.duration_ms || 1; progT = Date.now();
+  if(nowAlbum && s.item.album?.uri === nowAlbum.uri || (nowAlbum && s.item.album?.name === nowAlbum.name)){
+    const i = tracksOf(nowAlbum).findIndex(t => t.uri === s.item.uri || t.name === s.item.name);
+    if(i >= 0 && i !== nowTrackIdx){ nowTrackIdx = i; renderTracklist(); }
+  }
+  renderPlayState();
+}
+async function poll(){
+  if(DEMO || !nowAlbum || document.hidden) return;
+  try{ const s = await api("/me/player"); if(s) applyState(s); }catch(e){}
+}
+setInterval(() => { if($("player").classList.contains("on") && !(sdkDeviceId && curDevice === sdkDeviceId)) poll(); }, 3000);
+setInterval(() => { if(playing){ progress += Date.now() - progT; progT = Date.now();
+  if(DEMO && progress > duration){ skip(1); } updateArm(); } }, 1000);
+
+/* ============================================================
+   ELENCO: brani che ti piacciono, album salvati, playlist
+   ============================================================ */
+let entries = [];
+async function loadEntries(){
+  if(DEMO){
+    entries = [{ kind: "albums", name: "Album salvati", sub: "20 album" }, { kind: "pl", id: "d1", name: "Playlist di prova", sub: "20 album" }];
+    return;
+  }
+  me = me || await api("/me");
+  const pls = await pageAll("/me/playlists", 300, x => x);
+  const readable = pls.filter(p => p.owner?.id === me.id || p.collaborative);
+  entries = [
+    { kind: "liked", name: "Brani che ti piacciono", sub: "La tua libreria" },
+    { kind: "albums", name: "Album salvati", sub: "Libreria" },
+    ...readable.map(p => ({ kind: "pl", id: p.id, name: p.name, img: p.images?.[0]?.url, sub: `${p.items?.total ?? p.tracks?.total ?? ""} brani` }))
+  ];
+  entries.hidden = pls.length - readable.length;
+}
+function renderEntries(){
+  const row = (e, i) => `<li class="row" data-i="${i}">
+      ${e.img ? `<div class="th" style="background-image:url('${esc(e.img)}')"></div>` : `<div class="th sp">${e.kind === "liked" ? "♥" : e.kind === "albums" ? "◎" : "≡"}</div>`}
+      <div class="tx"><b>${esc(e.name)}</b><span>${esc(e.sub || "")}</span></div><div class="chev">›</div></li>`;
+  const lib = entries.map((e, i) => [e, i]).filter(([e]) => e.kind !== "pl"), pl = entries.map((e, i) => [e, i]).filter(([e]) => e.kind === "pl");
+  $("lst").innerHTML = `<li class="sec-t">Libreria</li>${lib.map(([e, i]) => row(e, i)).join("")}
+    <li class="sec-t">Playlist</li>${pl.map(([e, i]) => row(e, i)).join("") || '<li class="note">Nessuna playlist creata da te.</li>'}
+    ${entries.hidden ? `<li class="note">${entries.hidden} playlist non sono mostrate: sono di Spotify o di altri utenti, e le app personali possono leggere solo le playlist create da te.</li>` : ""}`;
+  $("lst").querySelectorAll(".row").forEach(r => r.onclick = () => openList(entries[+r.dataset.i]));
+}
+function openLists(){ view("lists"); }
+async function openList(e){
+  curList = e; view("crate"); $("count").textContent = "";
+  crateEl.innerHTML = ""; sleeveEls = new Map(); albums = []; cur = 0;
+  setLcd($("crateLcd"), "CARICO…");
+  try{ albums = await loadList(e); }catch(err){ toast(err.message); albums = []; }
+  if(curList !== e) return;
+  if(!albums.length){ setLcd($("crateLcd"), e.name.toUpperCase());
+    crateEl.innerHTML = ""; $("count").textContent = "0"; toast("Qui non ci sono brani da mostrare."); return; }
+  layoutCrate();
+}
+$("toLists").onclick = openLists;
+$("toPlayer2").onclick = () => view("player");
+
+$("ppBtn").onclick = togglePlay;
+$("nextBtn").onclick = () => skip(1);
+$("prevBtn").onclick = () => skip(-1);
+$("backBtn").onclick = () => view(albums.length ? "crate" : "lists");
+$("toPlayer").onclick = () => view("player");
+
+/* ============================================================
+   DISCO SOLLEVATO: si alza dalla cassa, si gira, poi sul piatto o di nuovo nella cassa
+   ============================================================ */
+let busy = false, L = null;   // L = stato del disco sollevato
+const EASE = "cubic-bezier(.3,.7,.2,1)";
+function geom(){
+  const app = $("app").getBoundingClientRect();
+  const S = Math.min(app.width * .8, 380, app.height * .5);
+  return { app, S, cx: (app.width - S) / 2, cy: Math.max(70, app.height * .16) };
+}
+const inPl = (al, t) => !!al.plTracks && (al.plTracks.includes(t.id) || al.plTracks.includes(t.name));
+function startIdx(al){ const k = tracksOf(al).findIndex(t => inPl(al, t)); return k < 0 ? 0 : k; }
+const ryT = (S, d) => `translateX(${S/2}px) rotateY(${d}deg) translateX(${-S/2}px)`;
+const atT = (x, y, s = 1, extra = "") => `translate(${x}px,${y}px) scale(${s}) ${extra}`;
+
+async function pick(i){
+  if(busy || L) return; busy = true;
+  const al = albums[i];
+  if(!DEMO) await ensureTracks(al);
+  const srcEl = sleeveEls.get(i), src = srcEl.getBoundingClientRect();
+  const { app, S, cx, cy } = geom();
+  const fl = $("flight"); fl.innerHTML = "";
+  const F = document.createElement("div"); F.className = "fl fl-sleeve"; F.style.width = F.style.height = S + "px"; F.style.pointerEvents = "auto";
+  const t = tracksOf(al);
+  F.innerHTML = `<div class="face" style="background-image:url('${img(al,true)}')"></div>
+    <div class="face back ${t.length > 11 ? "scroll" : ""}"><h4>${esc(al.name)}</h4><div class="a">${esc(artists(al))}${al.release_date ? " · " + esc(al.release_date.slice(0,4)) : ""}</div>
+    <ol>${t.map((x,k) => `<li data-k="${k}" class="${inPl(al, x) ? "pl" : ""}"><b>${String(k+1).padStart(2,"0")}</b><span>${esc(x.name)}</span></li>`).join("")}</ol><div class="bc"></div></div>`;
+  fl.appendChild(F);
+  srcEl.style.visibility = "hidden";
+  $("liftUi").style.top = (cy + S + 26) + "px"; $("liftHint").style.top = (cy - 26) + "px";
+  $("lift").classList.add("on");
+  L = { i, al, F, S, cx, cy, back: false, ang: 0, srcEl };
+  const sx = src.left - app.left, sy = src.top - app.top, ss = src.width / S;
+  await F.animate([{ transform: atT(sx, sy, ss, ryT(S, 0)) }, { transform: atT(cx, cy, 1, ryT(S, 0)) }],
+    { duration: 480, easing: EASE, fill: "forwards" }).finished;
+  $("liftHint").textContent = "Scorri di lato per girarla";
+  let x0 = null, y0 = 0, swiped = false;
+  F.addEventListener("pointerdown", e => { x0 = e.clientX; y0 = e.clientY; swiped = false; });
+  F.addEventListener("pointermove", e => {
+    if(x0 === null || swiped) return;
+    const dx = e.clientX - x0, dy = e.clientY - y0;
+    if(Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy) * 1.3){ swiped = true; flipLifted(dx > 0 ? 1 : -1); }
+  });
+  F.addEventListener("pointerup", () => { x0 = null; });
+  F.addEventListener("click", e => {
+    if(swiped){ swiped = false; return; }
+    const li = e.target.closest("li");
+    if(li && L.back){ toTurntable(+li.dataset.k); return; }
+    flipLifted(1);
+  });
+  busy = false;
+}
+async function flipLifted(dir = 1){
+  if(busy || !L) return; busy = true;
+  const { F, S, cx, cy } = L, from = L.ang, to = L.ang + dir * 180;
+  await F.animate([{ transform: atT(cx, cy, 1, ryT(S, from)) }, { transform: atT(cx, cy, 1, ryT(S, to)) }],
+    { duration: 520, easing: "ease-in-out", fill: "forwards" }).finished;
+  L.ang = to; L.back = !L.back;
+  $("liftHint").textContent = L.back ? (L.al.plTracks ? "In verde i brani della playlist · tocca per ascoltare" : "Tocca un brano per ascoltarlo") : "Scorri di lato per girarla";
+  busy = false;
+}
+async function putBack(){
+  if(busy || !L) return; busy = true;
+  const { F, S, cx, cy, srcEl } = L, { app } = geom();
+  $("lift").classList.remove("on");
+  const r = srcEl.getBoundingClientRect();
+  await F.animate([{ transform: atT(cx, cy, 1, ryT(S, L.ang)) }, { transform: atT(r.left - app.left, r.top - app.top, r.width / S, ryT(S, L.back ? L.ang + 180 : L.ang)) }],
+    { duration: 460, easing: EASE, fill: "forwards" }).finished;
+  srcEl.style.visibility = ""; $("flight").innerHTML = ""; L = null; busy = false;
+  $("liftHint").textContent = "Scorri di lato per girarla";
+}
+async function toTurntable(trackIdx = 0){
+  if(busy || !L) return; busy = true;
+  const { al, F, S, cx, cy, srcEl } = L, { app } = geom();
+  $("lift").classList.remove("on");
+  if(L.back){ await F.animate([{ transform: atT(cx, cy, 1, ryT(S, L.ang)) }, { transform: atT(cx, cy, 1, ryT(S, L.ang + 180)) }],
+      { duration: 420, easing: "ease-in-out", fill: "forwards" }).finished; }
+
+  await setPlayerAlbum(al);
+  playing = false; renderPlayState(); updateArm(true);
+  const discEl = $("disc"), cardEl = $("coverCard");
+  discEl.style.visibility = "hidden"; cardEl.style.visibility = "hidden";
+  $("covers").scrollLeft = 0;
+
+  const VS = S * .96, vinylClone = discEl.cloneNode(true); vinylClone.removeAttribute("id");
+  vinylClone.querySelectorAll("[id]").forEach(n => n.removeAttribute("id"));
+  vinylClone.style.cssText = `position:absolute;left:0;top:0;width:${VS}px;height:${VS}px;visibility:visible`;
+  vinylClone.querySelector(".vinyl").style.setProperty("--vc", $("vinyl").style.getPropertyValue("--vc"));
+  const V = document.createElement("div"); V.className = "fl"; V.style.width = V.style.height = VS + "px"; V.appendChild(vinylClone);
+  $("flight").insertBefore(V, F);
+
+  try{
+    // il vinile scivola fuori dalla busta
+    await V.animate([{ transform: atT(cx + S*.02, cy + S*.02) }, { transform: atT(cx - S*.42, cy - S*.1) }],
+      { duration: 560, easing: EASE, fill: "forwards" }).finished;
+    // passa al giradischi: il disco va sul piatto, la copertina si posa sul legno
+    view("player");
+    const dr = discEl.getBoundingClientRect(), cr = cardEl.getBoundingClientRect();
+    playAlbum(al, trackIdx);
+    await Promise.all([
+      V.animate([{ transform: atT(cx - S*.42, cy - S*.1) }, { transform: atT(dr.left - app.left, dr.top - app.top, dr.width / VS) }],
+        { duration: 720, easing: EASE, fill: "forwards" }).finished,
+      F.animate([{ transform: atT(cx, cy, 1) }, { transform: atT(cr.left - app.left, cr.top - app.top, cr.width / S, "rotate(-1.2deg)") }],
+        { duration: 780, easing: EASE, fill: "forwards" }).finished
+    ]);
+  }catch(e){}
+  discEl.style.visibility = ""; cardEl.style.visibility = "";
+  srcEl.style.visibility = ""; $("flight").innerHTML = ""; L = null; busy = false;
+  $("liftHint").textContent = "Scorri di lato per girarla";
+}
+$("putBack").onclick = putBack;
+$("playIt").onclick = () => L && toTurntable(startIdx(L.al));
+$("lift").querySelector(".dim").onclick = putBack;
+
+/* ============================================================
+   DEMO (senza Spotify): ?demo nell'indirizzo
+   ============================================================ */
+function demoAlbums(){
+  const pal = [["#f2a7b5","#7fb3d5"],["#1d1d1b","#e8e1d3"],["#d94f30","#f2c14e"],["#2c4a3e","#c9d6a3"],["#6d4c8c","#f0b6d0"],
+               ["#e9e3d5","#20201e"],["#0f3057","#e7a33e"],["#b23a48","#fcb9b2"],["#3d405b","#f2cc8f"],["#81b29a","#f4f1de"]];
+  const names = ["Honeybee","Night Drive","Orange Sun","Moss","Velvet","Paper Moon","Blue Hour","Cherry","Dusk","Field Notes",
+                 "Static","Low Tide","Glasshouse","Kite","Saturn","Red Room","Lanterns","Echo Park","Salt","Overture"];
+  return names.map((n, i) => {
+    const [a, b] = pal[i % pal.length], c = document.createElement("canvas"); c.width = c.height = 400; const x = c.getContext("2d");
+    x.fillStyle = a; x.fillRect(0,0,400,400); x.fillStyle = b;
+    if(i % 3 === 0){ x.beginPath(); x.arc(200, 210, 120, 0, 7); x.fill(); }
+    else if(i % 3 === 1){ for(let k = 0; k < 8; k++) x.fillRect(0, k*50, 400, 22); }
+    else { x.fillRect(40, 40, 320, 320); x.fillStyle = a; x.fillRect(90, 90, 220, 220); }
+    x.fillStyle = i % 2 ? "#fff" : "#111"; x.font = "600 30px Inter Tight, sans-serif"; x.fillText(n.toUpperCase(), 28, 375);
+    const url = c.toDataURL("image/jpeg", .85);
+    return { name: n, uri: "demo:" + i, release_date: "2026", artists: [{ name: "Artista " + (i+1) }], images: [{ url }],
+      tracks: { items: Array.from({ length: 9 }, (_, k) => ({ name: ["Intro","Honeybee","Slow Light","Paper Planes","Undertow","Golden","Static Bloom","Late Train","Coda"][k], duration_ms: 200000 })) } };
+  });
+}
+
+/* ============================================================
+   AVVIO
+   ============================================================ */
+$("ruri").textContent = REDIRECT;
+function gate(sec, msg){ view("gate"); $("gSetup").classList.toggle("on", sec === "setup"); $("gLogin").classList.toggle("on", sec === "login");
+  if(msg) $("gMsg").textContent = msg; $("loading").style.display = "none"; }
+$("saveCid").onclick = () => { const v = $("cid").value.trim(); if(!v) return; store.set("client_id", v); gate("login"); };
+$("loginBtn").onclick = login;
+$("resetCid").onclick = () => { store.del("client_id"); gate("setup"); };
+$("logoutBtn").onclick = () => { if(DEMO) return; if(confirm("Vuoi uscire da Spotify su questo dispositivo?")){ clearSession(); location.replace(REDIRECT); } };
+addEventListener("resize", () => { if(albums.length) layoutCrate(); layoutDeck(); });
+
+(async function start(){
+  try{
+    if(!DEMO){
+      const q = new URLSearchParams(location.search);
+      if(!store.get("client_id")) return gate("setup");
+      if(q.get("error")) throw new Error("Accesso annullato.");
+      if(q.get("code")){
+        await tokenRequest({ grant_type: "authorization_code", code: q.get("code"), redirect_uri: REDIRECT,
+          client_id: store.get("client_id"), code_verifier: store.get("pkce_verifier") });
+        history.replaceState(null, "", REDIRECT);
+      }
+      if(!store.get("refresh_token")) return gate("login");
+      if(!hasScopes()){ clearSession(); return gate("login", "Nuova versione: accedi di nuovo una volta per leggere playlist e brani che ti piacciono."); }
+    }
+    await loadEntries();
+    $("loading").style.display = "none";
+    renderEntries(); view("lists"); layoutDeck(); loadSDK();
+  }catch(e){
+    gate("login", e.status === 403 ? "Questo account non è tra gli utenti autorizzati dell'app Spotify." : e.message);
+  }
+})();
+</script>
+</body>
+</html>
