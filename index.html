@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#140c07">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SOTU">
@@ -23,7 +23,7 @@ html,body{height:100%;background:#000;color:var(--ink);overflow:hidden}
 body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antialiased;
      overscroll-behavior:none;user-select:none;-webkit-user-select:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-.app{position:relative;height:100%;max-width:480px;margin:0 auto;overflow:hidden;
+.app{position:relative;height:100%;height:100dvh;max-width:480px;margin:0 auto;overflow:hidden;
      background:#000}
 
 .view{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;z-index:3;
@@ -56,7 +56,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #crate .top{z-index:6}
 .brand-logo{display:block;width:184px;height:auto;margin:18px 0 10px 4px}
 .listwrap{position:absolute;left:0;right:0;top:0;padding-top:calc(env(safe-area-inset-top) + 8px);bottom:0;overflow-y:auto;
-     -webkit-overflow-scrolling:touch;padding:8px 16px calc(env(safe-area-inset-bottom) + 24px)}
+     -webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 8px) 16px calc(env(safe-area-inset-bottom) + 24px)}
 .lst{list-style:none}
 .lst .sec-t{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
      color:rgba(236,230,218,.5);padding:18px 4px 8px}
