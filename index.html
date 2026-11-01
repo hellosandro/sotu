@@ -28,8 +28,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .app::before{content:"";position:absolute;inset:0;pointer-events:none;
   background:repeating-linear-gradient(90deg,transparent 0 118px,rgba(0,0,0,.45) 118px 120px,transparent 120px 121px),
              radial-gradient(120% 80% at 50% 40%,transparent 40%,rgba(0,0,0,.65))}
-.view{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s ease}
-.view.on{opacity:1;pointer-events:auto}
+.view{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;z-index:3;
+      transition:opacity .45s ease,visibility 0s .45s}
+.view.on{opacity:1;visibility:visible;pointer-events:auto;z-index:2;transition:opacity .45s ease}
+/* Safari appiattisce il 3D di tutto ciò che è semitrasparente: la cassa non sfuma mai.
+   Sta sempre sotto: quando arriva è la schermata che se ne va a sfumare sopra di lei,
+   quando se ne va è la nuova schermata a comparire sopra di lei */
+#crate{opacity:1;z-index:1}
+#crate.on{z-index:1}
 
 /* ---------- barra superiore ---------- */
 .top{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:10px;
