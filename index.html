@@ -708,7 +708,7 @@ async function pick(i){
     <ol>${t.map((x,k) => `<li data-k="${k}" class="${inPl(al, x) ? "pl" : ""}"><b>${String(k+1).padStart(2,"0")}</b><span>${esc(x.name)}</span></li>`).join("")}</ol></div>`;
   fl.appendChild(F);
   srcEl.style.visibility = "hidden";
-  $("liftUi").style.top = (cy + S + 26) + "px"; $("liftHint").style.top = (cy - 26) + "px";
+  $("liftUi").style.top = (cy + S + 56) + "px"; $("liftHint").style.top = (cy - 26) + "px";
   $("lift").classList.add("on");
   L = { i, al, F, S, cx, cy, back: false, ang: 0, srcEl };
   const sx = src.left - app.left, sy = src.top - app.top, ss = src.width / S;
