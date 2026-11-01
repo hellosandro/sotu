@@ -66,10 +66,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* ---------- cover flow verticale ---------- */
 #crate .scene{position:absolute;inset:0;
-     perspective:700px;perspective-origin:50% 50%;overflow:hidden;touch-action:none}
+     overflow:hidden;touch-action:none}
 #crate .scene::before{content:"";position:absolute;inset:0;pointer-events:none;
      background:radial-gradient(70% 55% at 50% 50%,transparent,rgba(8,4,2,.55))}
-.crate{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.crate{position:absolute;left:50%;top:50%;width:0;height:0;perspective:700px;perspective-origin:0 0}
 .sleeve{position:absolute;width:var(--W);height:var(--W);left:calc(var(--W) / -2);top:calc(var(--W) / -2);
         transform-origin:50% 50%;transform-style:preserve-3d;
         transition:transform .45s cubic-bezier(.25,.8,.25,1),opacity .45s;will-change:transform}
@@ -122,6 +122,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .led{position:absolute;top:-7px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#3a0f0f}
 .led.on{background:#ff4b3a;box-shadow:0 0 6px #ff4b3a}
 .led.g.on{background:var(--lcd);box-shadow:0 0 6px var(--lcd)}
+.panel.ej{bottom:121px;width:auto;padding:8px}
+.panel.ej .rb svg{width:14px;height:14px}
 .panel .lcd{height:26px;line-height:26px;font-size:17px;padding:0 7px}
 .tbl{position:absolute;left:0;right:0;top:56%;bottom:0;z-index:1}
 .covers{position:absolute;inset:0;display:flex;overflow:hidden;scrollbar-width:none;touch-action:pan-y}
@@ -243,6 +245,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div class="disc" id="disc"><div class="vinyl spin" id="vinyl"><div class="label" id="label"></div></div><div class="sheen"></div></div>
       <img class="armbase" id="armbase" src="arm-base.svg?v=4" alt="">
       <div class="arm" id="arm"><img id="armImg" src="arm-move.svg?v=4" alt=""></div>
+      <div class="panel ej"><button class="rb" id="ejectBtn" aria-label="Rimetti il disco nella copertina"><svg viewBox="0 0 16 16"><path d="M8 2.5l6 7H2zM2 11.5h12v2H2z"/></svg></button></div>
       <div class="panel">
         <div class="btns">
           <button class="rb" id="prevBtn" aria-label="Precedente"><svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg></button>
@@ -419,7 +422,7 @@ function layoutCrate(){
   const r = scene.getBoundingClientRect();
   W = Math.round(Math.min(r.width * .8, 400, r.height * .36));
   $("app").style.setProperty("--W", W + "px");
-  scene.style.perspective = Math.round(W * 2.3) + "px";   // prospettiva proporzionata alla copertina
+  crateEl.style.perspective = Math.round(W * 2.3) + "px";   // prospettiva proporzionata alla copertina
   renderCrate();
 }
 /* Cover Flow verticale: la copertina scelta è dritta al centro;
@@ -863,6 +866,7 @@ async function stowRecord(){
   busy = false;
 }
 $("coverCard").onclick = stowRecord;
+$("ejectBtn").onclick = stowRecord;
 $("putBack").onclick = putBack;
 $("playIt").onclick = () => L && toTurntable(startIdx(L.al));
 $("lift").querySelector(".dim").onclick = putBack;
