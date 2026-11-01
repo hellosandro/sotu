@@ -790,49 +790,53 @@ async function toTurntable(trackIdx = 0){
 /* il disco torna nella copertina e la copertina torna nella cassa */
 async function stowRecord(){
   if(busy || !nowAlbum) return; busy = true;
-  const al = nowAlbum, app = $("app").getBoundingClientRect();
+  const al = nowAlbum;
   // la musica si ferma e il braccio torna a riposo
   if(playing){ playing = false; renderPlayState();
     if(!DEMO){ try{ if(sdkPlayer && sdkDeviceId && curDevice === sdkDeviceId) await sdkPlayer.pause(); else await api("/me/player/pause", { method: "PUT" }); }catch(e){} } }
   await new Promise(r => setTimeout(r, 450));
+  // stesse misure e stessi punti della partenza, percorsi al contrario
+  const { app, S, cx, cy } = geom(), VS = S * .96;
+  const up = { x: cx + S*.02, y: cy - S*.62 }, low = cy + S*.2;
   const discEl = $("disc"), cardEl = $("coverCard");
   const dr = discEl.getBoundingClientRect(), cr = cardEl.getBoundingClientRect();
-  const CS = cardEl.offsetWidth, VS = CS * .96;
-  // copie volanti: il vinile sotto, la copertina sopra
   const vc = discEl.cloneNode(true); vc.removeAttribute("id"); vc.querySelectorAll("[id]").forEach(n => n.removeAttribute("id"));
   vc.style.cssText = `position:absolute;left:0;top:0;width:${VS}px;height:${VS}px`;
   vc.querySelector(".vinyl").classList.remove("go");
   vc.querySelector(".vinyl").style.setProperty("--vc", $("vinyl").style.getPropertyValue("--vc"));
   const V = document.createElement("div"); V.className = "fl"; V.style.width = V.style.height = VS + "px"; V.appendChild(vc);
-  const F = document.createElement("div"); F.className = "fl";
-  F.style.cssText = `width:${CS}px;height:${CS}px;background:#2b2b2b url("${img(al, true)}") center/cover;box-shadow:0 18px 30px rgba(0,0,0,.7)`;
+  const F = document.createElement("div"); F.className = "fl fl-sleeve"; F.style.width = F.style.height = S + "px";
+  F.innerHTML = `<div class="face" style="background-image:url('${img(al,true)}')"></div>`;
   const fl = $("flight"); fl.innerHTML = ""; fl.append(V, F);
-  const cx = cr.left - app.left + (cr.width - CS) / 2, cy = cr.top - app.top + (cr.height - CS) / 2;
-  F.style.transform = atT(cx, cy, 1, "rotate(-1.2deg)");
+  const dPos = atT(dr.left - app.left, dr.top - app.top, dr.width / VS);
+  const cPos = atT(cr.left - app.left, cr.top - app.top, cr.width / S, "rotate(-1.2deg)");
+  V.style.transform = dPos; F.style.transform = cPos;
   discEl.style.visibility = "hidden"; cardEl.style.visibility = "hidden";
-  const out = { x: cx + CS * .02, y: cy - CS * .7 }, inn = { x: cx + CS * .02, y: cy + CS * .02 };
+  const i = albums.indexOf(al);
   try{
-    // il vinile si stacca dal piatto e si porta sopra la busta
-    await V.animate([{ transform: atT(dr.left - app.left, dr.top - app.top, dr.width / VS) }, { transform: atT(out.x, out.y) }],
-      { duration: 620, easing: EASE, fill: "forwards" }).finished;
-    // scivola dentro
-    await V.animate([{ transform: atT(out.x, out.y) }, { transform: atT(inn.x, inn.y) }],
-      { duration: 480, easing: "cubic-bezier(.5,0,.3,1)", fill: "forwards" }).finished;
-    V.remove();
-    // la copertina torna al suo posto nella cassa
-    const i = albums.indexOf(al);
-    if(i >= 0){ cur = i; view("crate"); renderCrate(); }
-    else view(albums.length ? "crate" : "lists");
+    // 1. il disco lascia il piatto e la copertina si solleva dal legno
+    await Promise.all([
+      V.animate([{ transform: dPos }, { transform: atT(up.x, up.y) }], { duration: 720, easing: EASE, fill: "forwards" }).finished,
+      F.animate([{ transform: cPos }, { transform: atT(cx, low, 1) }], { duration: 780, easing: EASE, fill: "forwards" }).finished
+    ]);
+    // 2. torna la cassa; il disco scende nella busta mentre la busta risale
+    if(i >= 0){ cur = i; view("crate"); renderCrate(); } else view(albums.length ? "crate" : "lists");
     const dst = i >= 0 ? sleeveEls.get(i) : null;
+    if(dst) dst.style.visibility = "hidden";
+    await Promise.all([
+      V.animate([{ transform: atT(up.x, up.y) }, { transform: atT(cx + S*.02, cy + S*.02) }], { duration: 620, easing: EASE, fill: "forwards" }).finished,
+      F.animate([{ transform: atT(cx, low, 1) }, { transform: atT(cx, cy, 1) }], { duration: 620, easing: EASE, fill: "forwards" }).finished
+    ]);
+    V.remove();
+    // 3. la copertina torna al suo posto nella cassa
     if(dst){
-      dst.style.visibility = "hidden";
       const r = dst.getBoundingClientRect();
-      await F.animate([{ transform: atT(cx, cy, 1, "rotate(-1.2deg)") }, { transform: atT(r.left - app.left, r.top - app.top, r.width / CS) }],
-        { duration: 720, easing: EASE, fill: "forwards" }).finished;
+      await F.animate([{ transform: atT(cx, cy, 1) }, { transform: atT(r.left - app.left, r.top - app.top, r.width / S) }],
+        { duration: 480, easing: EASE, fill: "forwards" }).finished;
       dst.style.visibility = "";
     }else{
-      await F.animate([{ transform: atT(cx, cy, 1, "rotate(-1.2deg)"), opacity: 1 }, { transform: atT(cx, app.height + 40, 1, "rotate(-1.2deg)"), opacity: 0 }],
-        { duration: 600, easing: EASE, fill: "forwards" }).finished;
+      await F.animate([{ transform: atT(cx, cy, 1), opacity: 1 }, { transform: atT(cx, app.height + 40, 1), opacity: 0 }],
+        { duration: 480, easing: EASE, fill: "forwards" }).finished;
     }
   }catch(e){}
   fl.innerHTML = ""; discEl.style.visibility = ""; cardEl.style.visibility = "";
