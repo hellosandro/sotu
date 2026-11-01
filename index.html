@@ -124,12 +124,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .led.g.on{background:var(--lcd);box-shadow:0 0 6px var(--lcd)}
 .panel .lcd{height:26px;line-height:26px;font-size:17px;padding:0 7px}
 .tbl{position:absolute;left:0;right:0;top:56%;bottom:0;z-index:1}
-.covers{position:absolute;inset:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x}
+.covers{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x}
 .covers::-webkit-scrollbar{display:none}
-.slot{flex:0 0 100%;scroll-snap-align:center;display:grid;place-items:center;padding:18px 0 calc(env(safe-area-inset-bottom) + 18px)}
-.card{width:min(74vw,330px,calc(100% - 40px));aspect-ratio:1;max-height:100%;background:#2b2b2b center/cover;
-      box-shadow:0 18px 30px rgba(0,0,0,.7),0 2px 4px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.05);transform:rotate(-1.2deg)}
-.inner{background:#e9e0cf;color:#2b231a;padding:16px 16px;overflow:auto;transform:rotate(.8deg);touch-action:pan-y;
+.slot{flex:0 0 100%;scroll-snap-align:center;position:relative;height:100%;overflow:hidden}
+.card{position:absolute;left:50%;top:22px;width:var(--D,330px);height:var(--D,330px);background:#2b2b2b center/cover;
+      box-shadow:0 18px 30px rgba(0,0,0,.7),0 2px 4px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.05);transform:translateX(-50%) rotate(-1.2deg)}
+.inner{background:#e9e0cf;color:#2b231a;padding:22px max(28px, calc((var(--D,330px) - min(100vw, 480px)) / 2 + 24px)) 90px;overflow:auto;transform:translateX(-50%) rotate(.8deg);touch-action:pan-y;
+       height:calc(100% + 40px);
        font-family:"IBM Plex Mono",monospace;font-size:12px}
 .inner h3{font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:2px}
 .inner p.a{font-size:11px;color:#7a6d5c;margin-bottom:12px;letter-spacing:.06em}
@@ -138,7 +139,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .inner li b{font-weight:400;width:20px;color:#9a8c78;flex:none}
 .inner li.on{font-weight:500}
 .inner li.on b{color:#b0412e}
-.dots{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 6px);display:flex;justify-content:center;gap:6px;pointer-events:none}
+.dots{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 10px);z-index:2;display:flex;justify-content:center;gap:6px;pointer-events:none}
 .dots i{width:5px;height:5px;border-radius:50%;background:rgba(236,230,218,.3)}
 .dots i.on{background:rgba(236,230,218,.85)}
 
@@ -500,6 +501,7 @@ function layoutDeck(){
   G = { w, h, D, R, C, P, L, dist, k };
   Object.assign($("platter").style, { width: D*1.04 + "px", height: D*1.04 + "px", left: C.x - D*.52 + "px", top: C.y - D*.52 + "px" });
   Object.assign($("disc").style, { width: D + "px", height: D + "px", left: C.x - R + "px", top: C.y - R + "px" });
+  $("app").style.setProperty("--D", Math.round(D * 1.03) + "px");
   const size = { width: 100 * k + "px", height: 75.2 * k + "px" };
   Object.assign($("armbase").style, size, { left: P.x - ARM.px * k + "px", top: P.y - ARM.py * k + "px" });
   Object.assign($("armImg").style, size, { left: -ARM.px * k + "px", top: -ARM.py * k + "px" });
