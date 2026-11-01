@@ -565,8 +565,6 @@ function loadSDK(){
     sdkPlayer.addListener("player_state_changed", s => { if(s) applyState({ is_playing: !s.paused, progress_ms: s.position,
       item: s.track_window.current_track, context: s.context }); });
     sdkPlayer.addListener("initialization_error", () => { sdkPlayer = null; sdkDeviceId = null; });
-    const drmHelp = "Il browser non riesce a suonare l'audio protetto di Spotify. In Zen o Firefox: Impostazioni › Generale › attiva \"Riproduci contenuti protetti da DRM\" e ricarica. Oppure apri l'app Spotify sul Mac: la musica andrà lì.";
-    sdkPlayer.addListener("playback_error", () => toast(drmHelp, 12000));
     sdkPlayer.addListener("autoplay_failed", () => toast("Il browser ha bloccato l'avvio automatico: tocca play sul giradischi.", 6000));
     sdkPlayer.addListener("account_error", () => toast("Serve un account Spotify Premium per suonare nel browser.", 8000));
     sdkPlayer.connect();
