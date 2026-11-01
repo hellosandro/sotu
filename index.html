@@ -19,15 +19,13 @@
   --plinth:#181716; --ink:#ece6da; --mute:#8c8478;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:#0d0805;color:var(--ink);overflow:hidden}
+html,body{height:100%;background:#000;color:var(--ink);overflow:hidden}
 body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antialiased;
      overscroll-behavior:none;user-select:none;-webkit-user-select:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .app{position:relative;height:100%;max-width:480px;margin:0 auto;overflow:hidden;
-     background:var(--wood) center/cover,#251309}
-.app::before{content:"";position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(90deg,transparent 0 118px,rgba(0,0,0,.45) 118px 120px,transparent 120px 121px),
-             radial-gradient(120% 80% at 50% 40%,transparent 40%,rgba(0,0,0,.65))}
+     background:#000}
+
 .view{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;z-index:3;
       transition:opacity .45s ease,visibility 0s .45s}
 .view.on{opacity:1;visibility:visible;pointer-events:auto;z-index:2;transition:opacity .45s ease}
@@ -53,7 +51,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .brand{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;color:var(--mute)}
 
 /* ---------- elenco ---------- */
-#lists .top,#crate .top{background:linear-gradient(rgba(14,8,4,.9),rgba(14,8,4,.6) 70%,transparent)}
+#lists .top,#crate .top{background:linear-gradient(rgba(0,0,0,.92),rgba(0,0,0,.6) 70%,transparent)}
 #crate .top{z-index:6}
 .listwrap{position:absolute;left:0;right:0;top:0;padding-top:calc(env(safe-area-inset-top) + 8px);bottom:0;overflow-y:auto;
      -webkit-overflow-scrolling:touch;padding:8px 16px calc(env(safe-area-inset-bottom) + 24px)}
@@ -74,7 +72,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #crate .scene{position:absolute;inset:0;
      overflow:hidden;touch-action:none}
 #crate .scene::before{content:"";position:absolute;inset:0;pointer-events:none;
-     background:radial-gradient(70% 55% at 50% 50%,transparent,rgba(8,4,2,.55))}
+     background:none}
 .crate{position:absolute;left:50%;top:50%;width:0;height:0;perspective:700px;perspective-origin:0 0}
 .sleeve{position:absolute;width:var(--W);height:var(--W);left:calc(var(--W) / -2);top:calc(var(--W) / -2);
         transform-origin:50% 50%;transform-style:preserve-3d;
@@ -165,7 +163,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- disco sollevato ---------- */
 #lift{position:absolute;inset:0;z-index:15;opacity:0;pointer-events:none;transition:opacity .35s}
 #lift.on{opacity:1;pointer-events:auto}
-#lift .dim{position:absolute;inset:0;background:rgba(8,5,3,.74);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#lift .dim{position:absolute;inset:0;background:rgba(0,0,0,.78);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 .lift-ui{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:12px;padding:0 20px}
 .lift-ui button{border-radius:999px;padding:14px 30px;font-weight:600;font-size:15px}
 .lift-ui .ghost{color:var(--ink);box-shadow:inset 0 0 0 1px rgba(236,230,218,.35)}
