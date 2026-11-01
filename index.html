@@ -54,7 +54,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- elenco ---------- */
 #lists .top,#crate .top{background:linear-gradient(rgba(0,0,0,.92),rgba(0,0,0,.6) 70%,transparent)}
 #crate .top{z-index:6}
-.brand-logo{display:block;width:200px;height:auto;margin:14px 0 6px -2px}
+.brand-logo{display:block;width:184px;height:auto;margin:18px 0 10px 4px}
 .listwrap{position:absolute;left:0;right:0;top:0;padding-top:calc(env(safe-area-inset-top) + 8px);bottom:0;overflow-y:auto;
      -webkit-overflow-scrolling:touch;padding:8px 16px calc(env(safe-area-inset-bottom) + 24px)}
 .lst{list-style:none}
@@ -197,7 +197,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* ---------- accesso ---------- */
 #gate{display:flex;flex-direction:column;justify-content:center;padding:32px 28px;background:#000}
-#gate .logo{display:block;width:min(78vw,300px);height:auto;margin:0 0 40px -3px}
+#gate .logo{display:block;width:min(78vw,300px);height:auto;margin:0 0 40px}
 #gate .sub{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin:10px 0 36px}
 #gate p{color:#cfc7b8;max-width:32ch;line-height:1.5;margin-bottom:22px}
 #gate label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
@@ -223,7 +223,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- ACCESSO -->
   <section class="view" id="gate">
-    <img class="logo" src="sotu-logo.svg" alt="SOTU — Sounds of the Universe">
+    <img class="logo" src="sotu-logo.svg?v=2" alt="SOTU — Sounds of the Universe">
     <div class="sec" id="gSetup">
       <p>Prima volta qui. Incolla il Client ID della tua app Spotify.</p>
       <label for="cid">Client ID</label>
@@ -240,7 +240,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- ELENCO -->
   <section class="view" id="lists">
-    <div class="listwrap"><img class="brand-logo" src="sotu-logo.svg" alt="SOTU — Sounds of the Universe"><ul class="lst" id="lst"></ul></div>
+    <div class="listwrap"><img class="brand-logo" src="sotu-logo.svg?v=2" alt="SOTU — Sounds of the Universe"><ul class="lst" id="lst"></ul></div>
   </section>
 
   <!-- COVER FLOW -->
