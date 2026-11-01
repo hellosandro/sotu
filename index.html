@@ -94,9 +94,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    box-shadow:0 14px 30px rgba(0,0,0,.7);z-index:2}
 .deck::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
    background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px)}
+/* piatto con anello stroboscopico: quattro file di puntini sul bordo, come sui giradischi da DJ */
 .platter{position:absolute;border-radius:50%;
-   background:radial-gradient(circle,#2b2a28 0 60%,#0d0d0c 60.5% 97%,#4d4b47 97.5%,#191817 99%);
+   background:radial-gradient(circle,#1a1a19 0 89.5%,#7c7a75 90%,#2a2a29 90.6% 99%,#8d8b85 99.4%,#151514 100%);
    box-shadow:0 6px 18px rgba(0,0,0,.8)}
+.strobe{position:absolute;inset:0;width:100%;height:100%;animation:spin 1.8s linear infinite;animation-play-state:paused}
+.strobe.go{animation-play-state:running}
+.strobe circle{fill:#b4b1aa}
+/* la lucina rossa che illumina i puntini dal lato */
+.glow{position:absolute;border-radius:50%;pointer-events:none;mix-blend-mode:screen;opacity:.25;transition:opacity .6s;
+   background:radial-gradient(closest-side,rgba(255,45,25,.95),rgba(255,30,15,.45) 45%,transparent)}
+.glow.on{opacity:1}
+.lamp{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;z-index:1;
+   background:radial-gradient(circle at 50% 40%,#3a3936,#121211 70%);box-shadow:0 2px 4px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.1)}
+.lamp::after{content:"";position:absolute;inset:6px;border-radius:50%;background:#3a0f0c;transition:background .6s,box-shadow .6s}
+.lamp.on::after{background:#ff3a22;box-shadow:0 0 8px 2px rgba(255,50,30,.8)}
 .disc{position:absolute;border-radius:50%;overflow:hidden}
 .vinyl{position:absolute;inset:0;border-radius:50%;background-color:var(--vc,#111);
    background-image:
@@ -246,7 +258,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <!-- GIRADISCHI -->
   <section class="view" id="player">
     <div class="deck" id="deck">
-      <div class="platter" id="platter"></div>
+      <div class="platter" id="platter"><svg class="strobe" id="strobe" viewBox="-50 -50 100 100"></svg></div>
+      <div class="glow" id="glow"></div><div class="lamp" id="lamp"></div>
       <div class="disc" id="disc"><div class="vinyl spin" id="vinyl"><div class="label" id="label"></div></div><div class="sheen"></div></div>
       <img class="armbase" id="armbase" src="arm-base.svg?v=4" alt="">
       <div class="arm" id="arm"><img id="armImg" src="arm-move.svg?v=4" alt=""></div>
@@ -502,7 +515,13 @@ function layoutDeck(){
   const L = Math.round(dist * 1.14);                     // la puntina arriva poco oltre il centro, come nella realtà
   const k = (L * .985) / ARM.tip;                       // pixel per unità del disegno
   G = { w, h, D, R, C, P, L, dist, k };
-  Object.assign($("platter").style, { width: D*1.04 + "px", height: D*1.04 + "px", left: C.x - D*.52 + "px", top: C.y - D*.52 + "px" });
+  const PR = R * 1.1;                                      // raggio del piatto: il bordo con i puntini sporge oltre il disco
+  Object.assign($("platter").style, { width: PR*2 + "px", height: PR*2 + "px", left: C.x - PR + "px", top: C.y - PR + "px" });
+  // lampada rossa in basso a destra del piatto, che illumina l'anello
+  const th = 58 * Math.PI / 180, lr = PR + 20;
+  Object.assign($("lamp").style, { left: C.x + lr * Math.cos(th) + "px", top: C.y + lr * Math.sin(th) + "px" });
+  const gs = R * .7, gx = C.x + PR * .96 * Math.cos(th), gy = C.y + PR * .96 * Math.sin(th);
+  Object.assign($("glow").style, { width: gs + "px", height: gs + "px", left: gx - gs/2 + "px", top: gy - gs/2 + "px" });
   Object.assign($("disc").style, { width: D + "px", height: D + "px", left: C.x - R + "px", top: C.y - R + "px" });
   $("app").style.setProperty("--D", Math.round(D * 1.03) + "px");
   const size = { width: 100 * k + "px", height: 75.2 * k + "px" };
@@ -511,6 +530,11 @@ function layoutDeck(){
   arm.style.left = P.x + "px"; arm.style.top = P.y + "px";
   updateArm(true);
 }
+(() => {   // quattro file di puntini, ognuna con un passo diverso
+  let h = ""; [[46.1, 160, .42], [47.15, 166, .42], [48.15, 172, .42], [49.1, 178, .4]].forEach(([r, n, d]) => {
+    for(let k = 0; k < n; k++){ const a = k / n * Math.PI * 2; h += `<circle cx="${(r*Math.cos(a)).toFixed(2)}" cy="${(r*Math.sin(a)).toFixed(2)}" r="${d}"/>`; } });
+  $("strobe").innerHTML = h;
+})();
 /* angolo del braccio perché la puntina tocchi il raggio r del disco */
 function armAngleFor(r){
   const { P, C, L } = G; const tipOff = L * .985;
@@ -523,7 +547,7 @@ function armAngleFor(r){
 }
 function updateArm(instant){
   if(!G.L) return;
-  let ang = armAngleFor(G.R * 1.12);                     // a riposo, appena fuori dal disco
+  let ang = armAngleFor(G.R * 1.2);                     // a riposo, appena fuori dal disco
   if(nowAlbum && playing){ const f = Math.min(1, Math.max(0, progress / duration)); ang = armAngleFor(G.R * (.92 - .42 * f)); }
 
   if(instant){ arm.style.transition = "none"; requestAnimationFrame(() => arm.style.transition = ""); }
@@ -532,6 +556,8 @@ function updateArm(instant){
 const ICON_PLAY = '<path d="M4 2l10 6-10 6z"/>', ICON_PAUSE = '<path d="M3 2h4v12H3zM9 2h4v12H9z"/>';
 function renderPlayState(){
   $("vinyl").classList.toggle("go", playing);
+  $("strobe").classList.toggle("go", playing);
+  $("glow").classList.toggle("on", !!nowAlbum); $("lamp").classList.toggle("on", !!nowAlbum);
   $("ppIcon").innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
   $("led").classList.toggle("on", playing);
   updateArm();
@@ -866,7 +892,7 @@ async function stowRecord(){
     if(dst) dst.style.visibility = "";
   }catch(e){}
   fl.innerHTML = ""; discEl.style.visibility = ""; cardEl.style.visibility = "";
-  nowAlbum = null; $("covers").scrollLeft = 0;
+  nowAlbum = null; renderPlayState(); $("covers").scrollLeft = 0;
   $("toPlayer").style.visibility = "hidden";
   busy = false;
 }
