@@ -494,9 +494,10 @@ function layoutDeck(){
   // disco grande, centro quasi sul bordo sinistro: si vede poco più di metà
   const R = Math.round(Math.min(h * .47, w * .62)), D = R * 2;
   const C = { x: Math.round(w * .04), y: Math.round(h * .47) };
-  const P = { x: Math.round(w * .74), y: Math.round(h * .28) };
+  // fulcro come su un giradischi vero: a destra del piatto (1,3 raggi) e più in alto del centro (0,6 raggi)
+  const P = { x: Math.round(Math.min(C.x + R * 1.3, w - 62)), y: Math.round(Math.max(C.y - R * .6, 78)) };
   const dist = Math.hypot(C.x - P.x, C.y - P.y);
-  const L = Math.round(dist * 1.19);
+  const L = Math.round(dist * 1.14);                     // la puntina arriva poco oltre il centro, come nella realtà
   const k = (L * .985) / ARM.tip;                       // pixel per unità del disegno
   G = { w, h, D, R, C, P, L, dist, k };
   Object.assign($("platter").style, { width: D*1.04 + "px", height: D*1.04 + "px", left: C.x - D*.52 + "px", top: C.y - D*.52 + "px" });
