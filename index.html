@@ -38,9 +38,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- barra superiore ---------- */
 .top{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;gap:10px;
      padding:calc(env(safe-area-inset-top) + 12px) 16px 10px}
-.ibtn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;
-      background:rgba(20,18,16,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 6px rgba(0,0,0,.5)}
-.ibtn svg{width:16px;height:16px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ibtn{width:44px;height:44px;display:grid;place-items:center;flex:none}
+.ibtn svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ibtn:active{opacity:.4}
+/* freccia indietro come quella di iOS: chevron sottile, alto 21px, a 8px dal bordo */
+.ibtn.bk{justify-content:start;margin-left:-8px}
+.ibtn.bk svg{width:13px;height:22px;stroke-width:3}
 .lcd{flex:1;min-width:0;height:30px;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;font-weight:600;color:#fff;
      line-height:30px;padding:0 10px;overflow:hidden;white-space:nowrap;position:relative}
 .lcd span{display:inline-block}
@@ -229,7 +232,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <!-- COVER FLOW -->
   <section class="view" id="crate">
     <div class="top">
-      <button class="ibtn" id="toLists" aria-label="Elenco"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button>
+      <button class="ibtn bk" id="toLists" aria-label="Elenco"><svg viewBox="0 0 13 22"><path d="M11 2L2 11l9 9"/></svg></button>
       <div class="lcd" id="crateLcd"><span>SOTU</span></div>
       <button class="ibtn" id="toPlayer" aria-label="Giradischi" style="visibility:hidden"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.5"/></svg></button>
     </div>
@@ -268,7 +271,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <div id="lift">
     <div class="dim"></div>
-    <div class="top"><button class="ibtn" id="putBack" aria-label="Indietro"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button></div>
+    <div class="top"><button class="ibtn bk" id="putBack" aria-label="Indietro"><svg viewBox="0 0 13 22"><path d="M11 2L2 11l9 9"/></svg></button></div>
     <div class="lift-hint" id="liftHint">Scorri di lato per girarla</div>
     <div class="lift-ui" id="liftUi">
       <button class="go" id="playIt"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg>Ascolta</button>
