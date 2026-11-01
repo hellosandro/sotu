@@ -100,7 +100,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* la lucina rossa che illumina i puntini dal lato */
 .glow{position:absolute;border-radius:50%;pointer-events:none;mix-blend-mode:screen;opacity:.25;transition:opacity .6s;
    background:radial-gradient(closest-side,rgba(255,45,25,.95),rgba(255,30,15,.45) 45%,transparent)}
-.glow.on{opacity:.6}
+.glow.on{opacity:.8}
 .lamp{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;z-index:1;
    background:radial-gradient(circle at 50% 40%,#3a3936,#121211 70%);box-shadow:0 2px 4px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.1)}
 .lamp::after{content:"";position:absolute;inset:6px;border-radius:50%;background:#3a0f0c;transition:background .6s,box-shadow .6s}
@@ -255,8 +255,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <section class="view" id="player">
     <div class="deck" id="deck">
       <div class="platter" id="platter"></div>
-      <div class="glow" id="glow"></div><div class="lamp" id="lamp"></div>
       <div class="disc" id="disc"><div class="vinyl spin" id="vinyl"><div class="label" id="label"></div></div><div class="sheen"></div></div>
+      <div class="glow" id="glow"></div><div class="lamp" id="lamp"></div>
       <img class="armbase" id="armbase" src="arm-base.svg?v=4" alt="">
       <div class="arm" id="arm"><img id="armImg" src="arm-move.svg?v=4" alt=""></div>
       <div class="panel ej"><button class="rb" id="ejectBtn" aria-label="Rimetti il disco nella copertina"><svg viewBox="0 0 16 16"><path d="M8 2.5l6 7H2zM2 11.5h12v2H2z"/></svg></button></div>
