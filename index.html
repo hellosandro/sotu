@@ -934,15 +934,14 @@ async function stowRecord(){
   const fLow = atT(cx, low, 1), fUp = atT(cx, cy, 1);
   const fEnd = r ? atT(r.left - app.left, r.top - app.top, r.width / S) : atT(cx, app.height + 40, 1);
   try{
-    // 1. il vinile lascia il piatto e rientra dall'alto nella copertina, che resta ferma al suo posto:
-    //    nessuno dei due cambia misura finché il disco non è dentro
-    const cw = cr.width, cs = cw * .96 / VS, bx = cr.left - app.left + cw * .02;
-    const vAbove = atT(bx, cr.top - app.top - cw * .72, cs), vInCard = atT(bx, cr.top - app.top + cw * .02, cs);
-    await path(V, [[dPos, 0], [vAbove, 720], [vInCard, 620]], 1340);
+    // al contrario dell'andata, senza fermate: il vinile rientra mentre la copertina torna nella cassa
+    const rs = r ? r.width / S : 1;
+    const vEnd = r ? atT(r.left - app.left + S*.02*rs, r.top - app.top + S*.02*rs, rs) : atT(cx + S*.02, app.height + 40);
+    setTimeout(() => view(i >= 0 || albums.length ? "crate" : "lists"), 820);
+    await Promise.all([
+      path(V, [[dPos, 0], [vUp, 860], [vEnd, 860]], 1720).then(() => V.style.opacity = 0),
+      path(F, [[cPos, 0], [fLow, 820], [fUp, 460], [fEnd, 520]], 1800)]);
     V.remove();
-    // 2. poi la copertina torna nella cassa
-    view(i >= 0 || albums.length ? "crate" : "lists");
-    await path(F, [[cPos, 0], [fEnd, 760]], 760);
     if(dst) dst.style.visibility = "";
   }catch(e){}
   fl.innerHTML = ""; discEl.style.visibility = ""; cardEl.style.visibility = "";
