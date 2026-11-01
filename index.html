@@ -211,8 +211,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 #toast{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 16px);z-index:30;
        background:rgba(18,16,14,.95);border:1px solid #3a332b;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.4;
-       color:#e9e2d4;transform:translateY(140%);transition:transform .35s ease}
-#toast.on{transform:none}
+       color:#e9e2d4;transform:translateY(20px);opacity:0;visibility:hidden;pointer-events:none;
+       transition:transform .35s ease,opacity .35s ease,visibility 0s .35s}
+#toast.on{transform:none;opacity:1;visibility:visible;pointer-events:auto;transition:transform .35s ease,opacity .35s ease}
 .loading{position:absolute;inset:0;display:grid;place-items:center;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;color:#fff}
 .still .sleeve,.still .sleeve i::after{transition:none!important}
 @media (prefers-reduced-motion: reduce){.sleeve{transition:none}.vinyl.spin{animation-duration:6s}}
