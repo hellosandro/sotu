@@ -49,7 +49,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- elenco ---------- */
 #lists .top,#crate .top{background:linear-gradient(rgba(14,8,4,.9),rgba(14,8,4,.6) 70%,transparent)}
 #crate .top{z-index:6}
-.listwrap{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 60px);bottom:0;overflow-y:auto;
+.listwrap{position:absolute;left:0;right:0;top:0;padding-top:calc(env(safe-area-inset-top) + 8px);bottom:0;overflow-y:auto;
      -webkit-overflow-scrolling:touch;padding:8px 16px calc(env(safe-area-inset-bottom) + 24px)}
 .lst{list-style:none}
 .lst .sec-t{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
@@ -218,11 +218,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- ELENCO -->
   <section class="view" id="lists">
-    <div class="top">
-      <button class="ibtn" id="logoutBtn" aria-label="Esci"><svg viewBox="0 0 16 16"><path d="M10 3H4v10h6M8 8h6M11.5 5.5L14 8l-2.5 2.5"/></svg></button>
-      <div class="lcd" id="listLcd"><span>SOTU · LA TUA MUSICA</span></div>
-      <button class="ibtn" id="toPlayer2" aria-label="Giradischi" style="visibility:hidden"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="1.5"/></svg></button>
-    </div>
     <div class="listwrap"><ul class="lst" id="lst"></ul></div>
   </section>
 
@@ -538,7 +533,7 @@ async function setPlayerAlbum(al){
   $("coverCard").style.backgroundImage = `url("${img(al, true)}")`;
   $("vinyl").style.setProperty("--vc", await vinylColor(img(al, true)));
   renderTracklist();
-  $("toPlayer").style.visibility = "visible"; $("toPlayer2").style.visibility = "visible";
+  $("toPlayer").style.visibility = "visible";
 }
 function tracksOf(al){ return (al.tracks?.items || []); }
 function renderTracklist(){
@@ -672,7 +667,6 @@ async function openList(e){
   layoutCrate();
 }
 $("toLists").onclick = openLists;
-$("toPlayer2").onclick = () => view("player");
 
 $("ppBtn").onclick = togglePlay;
 $("nextBtn").onclick = () => skip(1);
@@ -772,16 +766,20 @@ async function toTurntable(trackIdx = 0){
 
   try{
     // il vinile scivola fuori dalla busta
-    await V.animate([{ transform: atT(cx + S*.02, cy + S*.02) }, { transform: atT(cx - S*.42, cy - S*.1) }],
-      { duration: 560, easing: EASE, fill: "forwards" }).finished;
+    const up = { x: cx + S*.02, y: cy - S*.62 }, low = cy + S*.2;
+    await Promise.all([
+      V.animate([{ transform: atT(cx + S*.02, cy + S*.02) }, { transform: atT(up.x, up.y) }],
+        { duration: 620, easing: EASE, fill: "forwards" }).finished,
+      F.animate([{ transform: atT(cx, cy, 1) }, { transform: atT(cx, low, 1) }],
+        { duration: 620, easing: EASE, fill: "forwards" }).finished ]);
     // passa al giradischi: il disco va sul piatto, la copertina si posa sul legno
     view("player");
     const dr = discEl.getBoundingClientRect(), cr = cardEl.getBoundingClientRect();
     playAlbum(al, trackIdx);
     await Promise.all([
-      V.animate([{ transform: atT(cx - S*.42, cy - S*.1) }, { transform: atT(dr.left - app.left, dr.top - app.top, dr.width / VS) }],
+      V.animate([{ transform: atT(up.x, up.y) }, { transform: atT(dr.left - app.left, dr.top - app.top, dr.width / VS) }],
         { duration: 720, easing: EASE, fill: "forwards" }).finished,
-      F.animate([{ transform: atT(cx, cy, 1) }, { transform: atT(cr.left - app.left, cr.top - app.top, cr.width / S, "rotate(-1.2deg)") }],
+      F.animate([{ transform: atT(cx, low, 1) }, { transform: atT(cr.left - app.left, cr.top - app.top, cr.width / S, "rotate(-1.2deg)") }],
         { duration: 780, easing: EASE, fill: "forwards" }).finished
     ]);
   }catch(e){}
@@ -812,7 +810,7 @@ async function stowRecord(){
   const cx = cr.left - app.left + (cr.width - CS) / 2, cy = cr.top - app.top + (cr.height - CS) / 2;
   F.style.transform = atT(cx, cy, 1, "rotate(-1.2deg)");
   discEl.style.visibility = "hidden"; cardEl.style.visibility = "hidden";
-  const out = { x: cx - CS * .42, y: cy - CS * .16 }, inn = { x: cx + CS * .02, y: cy + CS * .02 };
+  const out = { x: cx + CS * .02, y: cy - CS * .7 }, inn = { x: cx + CS * .02, y: cy + CS * .02 };
   try{
     // il vinile si stacca dal piatto e si porta sopra la busta
     await V.animate([{ transform: atT(dr.left - app.left, dr.top - app.top, dr.width / VS) }, { transform: atT(out.x, out.y) }],
@@ -839,7 +837,7 @@ async function stowRecord(){
   }catch(e){}
   fl.innerHTML = ""; discEl.style.visibility = ""; cardEl.style.visibility = "";
   nowAlbum = null; $("covers").scrollLeft = 0;
-  $("toPlayer").style.visibility = "hidden"; $("toPlayer2").style.visibility = "hidden";
+  $("toPlayer").style.visibility = "hidden";
   busy = false;
 }
 $("coverCard").onclick = stowRecord;
@@ -877,7 +875,6 @@ function gate(sec, msg){ view("gate"); $("gSetup").classList.toggle("on", sec ==
 $("saveCid").onclick = () => { const v = $("cid").value.trim(); if(!v) return; store.set("client_id", v); gate("login"); };
 $("loginBtn").onclick = login;
 $("resetCid").onclick = () => { store.del("client_id"); gate("setup"); };
-$("logoutBtn").onclick = () => { if(DEMO) return; if(confirm("Vuoi uscire da Spotify su questo dispositivo?")){ clearSession(); location.replace(REDIRECT); } };
 addEventListener("resize", () => { if(albums.length) layoutCrate(); layoutDeck(); });
 
 (async function start(){
