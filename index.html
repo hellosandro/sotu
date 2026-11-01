@@ -487,15 +487,17 @@ let G = {}; // geometria
 let nowAlbum = null, nowTrackIdx = 0, playing = false, progress = 0, duration = 1, progT = 0;
 
 /* il braccio viene dal disegno SVG (viewBox 100×75.2):
-   perno in (79.2, 19.4), puntina a 53.3 unità, inclinazione del disegno 26.8° */
-const ARM = { px: 79.2, py: 19.4, tip: 53.3, a0: 26.8 };
+   perno in (79.2, 19.4), puntina a 54.04 unità, inclinazione del disegno 26.9° */
+const ARM = { px: 79.2, py: 19.4, tip: 54.04, a0: 26.9 };
 function layoutDeck(){
   const w = deck.clientWidth, h = deck.clientHeight;
   // disco grande, centro quasi sul bordo sinistro: si vede poco più di metà
-  const R = Math.round(Math.min(h * .47, w * .62)), D = R * 2;
-  const C = { x: Math.round(w * .04), y: Math.round(h * .47) };
-  // fulcro come su un giradischi vero: a destra del piatto (1,3 raggi) e più in alto del centro (0,6 raggi)
-  const P = { x: Math.round(Math.min(C.x + R * 1.3, w - 62)), y: Math.round(Math.max(C.y - R * .6, 78)) };
+  const R = Math.round(Math.min(h * .47, w * .58)), D = R * 2;
+  // fulcro come su un giradischi vero: a destra del piatto (1,2 raggi) e più in alto del centro (0,6 raggi).
+  // il disco si sposta a destra quanto basta perché la base del braccio stia appena dentro il bordo
+  const cx = Math.round(Math.min(Math.max(w - 70 - R * 1.2, w * .04), w * .22));
+  const C = { x: cx, y: Math.round(h * .47) };
+  const P = { x: Math.round(Math.min(C.x + R * 1.2, w - 62)), y: Math.round(Math.max(C.y - R * .6, 78)) };
   const dist = Math.hypot(C.x - P.x, C.y - P.y);
   const L = Math.round(dist * 1.14);                     // la puntina arriva poco oltre il centro, come nella realtà
   const k = (L * .985) / ARM.tip;                       // pixel per unità del disegno
