@@ -41,9 +41,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ibtn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;
       background:rgba(20,18,16,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 6px rgba(0,0,0,.5)}
 .ibtn svg{width:16px;height:16px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.lcd{flex:1;min-width:0;height:30px;border-radius:6px;background:#06140a;
-     box-shadow:inset 0 2px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.06);
-     font-family:"VT323",monospace;font-size:20px;color:var(--lcd);text-shadow:0 0 6px rgba(93,255,122,.55);
+.lcd{flex:1;min-width:0;height:30px;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;font-weight:600;color:#fff;
      line-height:30px;padding:0 10px;overflow:hidden;white-space:nowrap;position:relative}
 .lcd span{display:inline-block}
 .lcd span.run{animation:marquee var(--dur,10s) linear infinite}
@@ -61,7 +59,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .lst .row{display:flex;align-items:center;gap:16px;padding:12px 4px;border-bottom:1px solid rgba(236,230,218,.09);cursor:pointer}
 .lst .row:active{background:rgba(0,0,0,.25)}
 .lst .th{width:76px;height:76px;flex:none;background:#2a211b center/cover;box-shadow:0 4px 10px rgba(0,0,0,.55)}
-.lst .th.sp{display:grid;place-items:center;font-family:"VT323",monospace;font-size:36px;color:var(--lcd);background:#06140a}
+.lst .th.sp{display:grid;place-items:center;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:30px;color:#fff;background:#1c1c1c}
 .lst .tx{flex:1;min-width:0;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
 .lst .tx b{display:block;font-weight:700;font-size:19px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lst .tx span{display:block;font-size:15px;color:rgba(236,230,218,.55);margin-top:3px}
@@ -84,7 +82,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .sleeve i::after{content:"";position:absolute;inset:0;background:#000;opacity:var(--shade,0);transition:opacity .45s}
 .crate-hint{position:absolute;z-index:6;pointer-events:none;left:0;right:56px;padding-left:56px;bottom:calc(env(safe-area-inset-bottom) + 20px);text-align:center;
      font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(236,230,218,.5)}
-.count{position:absolute;z-index:6;pointer-events:none;right:18px;bottom:calc(env(safe-area-inset-bottom) + 16px);font-family:"VT323",monospace;font-size:18px;color:rgba(236,230,218,.5)}
+.count{position:absolute;z-index:6;pointer-events:none;right:18px;bottom:calc(env(safe-area-inset-bottom) + 16px);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.55)}
 .flow-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:40px;color:rgba(236,230,218,.6);font-size:14px;line-height:1.5}
 
 /* ---------- giradischi ---------- */
@@ -128,7 +126,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .led.g.on{background:var(--lcd);box-shadow:0 0 6px var(--lcd)}
 .panel.ej{bottom:121px;width:auto;padding:8px}
 .panel.ej .rb svg{width:14px;height:14px}
-.panel .lcd{height:26px;line-height:26px;font-size:17px;padding:0 7px}
+.panel .lcd{height:26px;line-height:26px;font-size:14px;font-weight:500;padding:0 7px}
 .tbl{position:absolute;left:0;right:0;top:56%;bottom:0;z-index:1}
 .covers{position:absolute;inset:0;display:flex;overflow:hidden;scrollbar-width:none;touch-action:pan-y}
 .covers::-webkit-scrollbar{display:none}
@@ -197,7 +195,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
        background:rgba(18,16,14,.95);border:1px solid #3a332b;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.4;
        color:#e9e2d4;transform:translateY(140%);transition:transform .35s ease}
 #toast.on{transform:none}
-.loading{position:absolute;inset:0;display:grid;place-items:center;font-family:"VT323",monospace;font-size:22px;color:var(--lcd)}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;color:#fff}
 .still .sleeve,.still .sleeve i::after{transition:none!important}
 @media (prefers-reduced-motion: reduce){.sleeve{transition:none}.vinyl.spin{animation-duration:6s}}
 </style>
@@ -277,7 +275,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
   </div>
   <div id="flight"></div>
-  <div class="loading" id="loading">caricamento…</div>
+  <div class="loading" id="loading">Caricamento…</div>
   <div id="toast"></div>
 </div>
 
@@ -454,7 +452,7 @@ function renderCrate(){
   }
   if(!albums.length) return;
   const al = albums[cur];
-  if(al){ setLcd($("crateLcd"), `${artists(al)} — ${al.name}`.toUpperCase()); $("count").textContent = `${cur + 1}/${albums.length}`; }
+  if(al){ setLcd($("crateLcd"), `${artists(al)} — ${al.name}`); $("count").textContent = `${cur + 1}/${albums.length}`; }
 }
 function step(d){
   const n = Math.max(0, Math.min(albums.length - 1, cur + d));
@@ -550,7 +548,7 @@ function renderTracklist(){
   $("innerCard").innerHTML = `<h3>${esc(al.name)}</h3><p class="a">${esc(artists(al))}${al.release_date ? " · " + esc(al.release_date.slice(0,4)) : ""}</p>
     <ol>${t.map((x,i) => `<li data-i="${i}" class="${i === nowTrackIdx ? "on" : ""}"><b>${String(i+1).padStart(2,"0")}</b><span>${esc(x.name)}</span></li>`).join("")}</ol>`;
   $("innerCard").querySelectorAll("li").forEach(li => li.onclick = () => playAlbum(nowAlbum, +li.dataset.i));
-  const tr = t[nowTrackIdx]; setLcd($("trackLcd"), tr ? `${nowTrackIdx + 1}. ${tr.name.toLowerCase()}` : "—");
+  const tr = t[nowTrackIdx]; setLcd($("trackLcd"), tr ? `${nowTrackIdx + 1}. ${tr.name}` : "—");
 }
 /* swipe orizzontale tra copertina e brani, gestito a mano: la busta segue il dito e scatta sulla faccia giusta.
    (lo scorrimento nativo si bloccava quando si partiva dalla lista dei brani) */
@@ -692,10 +690,10 @@ function openLists(){ view("lists"); }
 async function openList(e){
   curList = e; view("crate"); $("count").textContent = "";
   crateEl.innerHTML = ""; sleeveEls = new Map(); albums = []; cur = 0;
-  setLcd($("crateLcd"), "CARICO…");
+  setLcd($("crateLcd"), "Carico…");
   try{ albums = await loadList(e); }catch(err){ toast(err.message); albums = []; }
   if(curList !== e) return;
-  if(!albums.length){ setLcd($("crateLcd"), e.name.toUpperCase());
+  if(!albums.length){ setLcd($("crateLcd"), e.name);
     crateEl.innerHTML = ""; $("count").textContent = "0"; toast("Qui non ci sono brani da mostrare."); return; }
   layoutCrate();
 }
