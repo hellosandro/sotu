@@ -118,7 +118,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .label{position:absolute;left:33%;top:33%;width:34%;height:34%;border-radius:50%;
    background:#333 center/cover;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
 .label::after{content:"";position:absolute;left:47%;top:47%;width:6%;height:6%;border-radius:50%;
-   background:radial-gradient(circle,#ccc 0 35%,#111 40%)}
+   background:#0b0b0a}
+/* il perno è del piatto, non del disco: resta lì quando il vinile se ne va */
+.spindle{position:absolute;border-radius:50%;z-index:1;pointer-events:none;
+   background:radial-gradient(circle at 40% 35%,#f2f2ef,#b9b8b3 45%,#6d6c68 100%);box-shadow:0 1px 2px rgba(0,0,0,.7)}
 .sheen{position:absolute;inset:0;border-radius:50%;pointer-events:none;
    background:conic-gradient(from 20deg,transparent 0 8%,rgba(255,255,255,.13) 13%,transparent 20% 50%,rgba(255,255,255,.1) 63%,transparent 70%);
    mix-blend-mode:screen;-webkit-mask:radial-gradient(circle,transparent 0 34%,#000 35%);mask:radial-gradient(circle,transparent 0 34%,#000 35%)}
@@ -259,6 +262,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="deck" id="deck">
       <div class="platter" id="platter"></div>
       <div class="disc" id="disc"><div class="vinyl spin" id="vinyl"><div class="label" id="label"></div></div><div class="sheen"></div></div>
+      <div class="spindle" id="spindle"></div>
       <div class="glow" id="glow"></div><div class="lamp" id="lamp"></div>
       <img class="armbase" id="armbase" src="arm-base.svg?v=4" alt="">
       <div class="arm" id="arm"><img id="armImg" src="arm-move.svg?v=4" alt=""></div>
@@ -515,6 +519,8 @@ function layoutDeck(){
   const k = (L * .985) / ARM.tip;                       // pixel per unità del disegno
   G = { w, h, D, R, C, P, L, dist, k };
   const PR = R * 1.04;
+  const sp = Math.max(4, D * .34 * .06 * .62);
+  Object.assign($("spindle").style, { width: sp + "px", height: sp + "px", left: C.x - sp/2 + "px", top: C.y - sp/2 + "px" });
   Object.assign($("platter").style, { width: PR*2 + "px", height: PR*2 + "px", left: C.x - PR + "px", top: C.y - PR + "px" });
   // lampada rossa in basso a destra del piatto, che illumina l'anello
   const th = 58 * Math.PI / 180, lr = PR + 20;
