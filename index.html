@@ -803,7 +803,7 @@ async function putBack(){
   const { F, S, cx, cy, srcEl } = L, { app } = geom();
   $("lift").classList.remove("on");
   const r = srcEl.getBoundingClientRect();
-  await F.animate([{ transform: atT(cx, cy, 1, ryT(S, L.ang)) }, { transform: atT(r.left - app.left, r.top - app.top, r.width / S, ryT(S, L.back ? L.ang + 180 : L.ang)) }],
+  await F.animate([{ transform: atT(cx, cy, 1, ryT(S, L.ang)) }, { transform: atT(r.left - app.left, r.top - app.top, r.width / S, ryT(S, L.back ? L.ang - 180 : L.ang)) }],
     { duration: 460, easing: EASE, fill: "forwards" }).finished;
   srcEl.style.visibility = ""; $("flight").innerHTML = ""; L = null; busy = false;
   $("liftHint").textContent = "Scorri di lato per girarla";
