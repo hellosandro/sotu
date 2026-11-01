@@ -747,6 +747,12 @@ function path(el, stops, total){
   kf[0].offset = 0;
   return el.animate(kf, { duration: total, fill: "forwards" }).finished;
 }
+/* come path, ma senza fermate: un'unica accelerazione e decelerazione su tutto il percorso */
+function glide(el, stops, total){
+  let t = 0; const kf = stops.map(([tr, ms]) => { t += ms; return { transform: tr, offset: t / total }; });
+  kf[0].offset = 0;
+  return el.animate(kf, { duration: total, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }).finished;
+}
 const quietCrate = fn => { crateEl.classList.add("still"); fn(); crateEl.offsetHeight; requestAnimationFrame(() => crateEl.classList.remove("still")); };
 
 async function pick(i){
@@ -839,10 +845,11 @@ async function goPlay(i){
   srcEl.style.visibility = "hidden"; discEl.style.visibility = "hidden"; cardEl.style.visibility = "hidden";
   try{
     // a metà strada compare il giradischi e parte la musica
-    setTimeout(() => { view("player"); playAlbum(al, trackIdx); }, 480 + 560);
+    // tutto insieme: mentre la copertina si avvicina il vinile comincia già a uscire dall'alto
+    setTimeout(() => { view("player"); playAlbum(al, trackIdx); }, 700);
     await Promise.all([
-      path(V, [[vSrc, 0], [vIn, 480], [vUp, 620], [vDisc, 760]], 1860),
-      path(F, [[fSrc, 0], [fUp, 480], [fLow, 620], [fCard, 820]], 1920)
+      glide(V, [[vSrc, 0], [vUp, 760], [vDisc, 840]], 1600),
+      glide(F, [[fSrc, 0], [fLow, 760], [fCard, 900]], 1660)
     ]);
   }catch(e){}
   discEl.style.visibility = ""; cardEl.style.visibility = ""; srcEl.style.visibility = "";
@@ -920,10 +927,14 @@ async function stowRecord(){
   const fLow = atT(cx, low, 1), fUp = atT(cx, cy, 1);
   const fEnd = r ? atT(r.left - app.left, r.top - app.top, r.width / S) : atT(cx, app.height + 40, 1);
   try{
-    setTimeout(() => view(i >= 0 || albums.length ? "crate" : "lists"), 620);
-    const vGo = path(V, [[dPos, 0], [vUp, 720], [vIn, 620]], 1340);
-    await Promise.all([vGo.then(() => V.remove()),
-      path(F, [[cPos, 0], [fLow, 780], [fUp, 620], [fEnd, 480]], 1880)]);
+    // al contrario dell'andata, senza fermate: il vinile rientra mentre la copertina torna nella cassa
+    const rs = r ? r.width / S : 1;
+    const vEnd = r ? atT(r.left - app.left + S*.02*rs, r.top - app.top + S*.02*rs, rs) : atT(cx + S*.02, app.height + 40);
+    setTimeout(() => view(i >= 0 || albums.length ? "crate" : "lists"), 900);
+    await Promise.all([
+      glide(V, [[dPos, 0], [vUp, 840], [vEnd, 760]], 1600),
+      glide(F, [[cPos, 0], [fLow, 900], [fEnd, 760]], 1660)]);
+    V.remove();
     if(dst) dst.style.visibility = "";
   }catch(e){}
   fl.innerHTML = ""; discEl.style.visibility = ""; cardEl.style.visibility = "";
