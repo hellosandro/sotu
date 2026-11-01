@@ -482,13 +482,13 @@ function step(d){
   scene.addEventListener("pointerup", e => { const tap = moved < 8 && Date.now() - downT < 500; y0 = null;
     if(tap && albums.length){
       const hit = document.elementsFromPoint(e.clientX, e.clientY).map(n => n.closest && n.closest(".sleeve")).find(Boolean);
-      if(hit){ const i = +hit.dataset.i; if(i === cur) pick(cur); else { cur = i; renderCrate(); } }
+      if(hit){ const i = +hit.dataset.i; if(i === cur) goPlay(cur); else { cur = i; renderCrate(); } }
     } });
   let wacc = 0;
   scene.addEventListener("wheel", e => { e.preventDefault(); wacc += e.deltaY; while(wacc > 40){ step(1); wacc -= 40; } while(wacc < -40){ step(-1); wacc += 40; } }, {passive:false});
   addEventListener("keydown", e => { if(!$("crate").classList.contains("on")) return;
     if(e.key === "Backspace" && !L) openLists();
-    if(e.key === "ArrowDown") step(1); if(e.key === "ArrowUp") step(-1); if(e.key === "Enter") (L ? toTurntable(startIdx(L.al)) : pick(cur)); if(e.key === "Escape") putBack(); });
+    if(e.key === "ArrowDown") step(1); if(e.key === "ArrowUp") step(-1); if(e.key === "Enter") (L ? toTurntable(startIdx(L.al)) : goPlay(cur)); if(e.key === "Escape") putBack(); });
 })();
 
 /* ============================================================
@@ -807,6 +807,46 @@ async function putBack(){
     { duration: 460, easing: EASE, fill: "forwards" }).finished;
   srcEl.style.visibility = ""; $("flight").innerHTML = ""; L = null; busy = false;
   $("liftHint").textContent = "Scorri di lato per girarla";
+}
+/* tocco sul disco al centro della cassa: la copertina si alza, il vinile esce dall'alto e va dritto sul piatto */
+async function goPlay(i){
+  if(busy || L) return; busy = true;
+  const al = albums[i], srcEl = sleeveEls.get(i);
+  try{ if(!DEMO) await ensureTracks(al); }catch(e){}
+  await setPlayerAlbum(al);
+  const trackIdx = startIdx(al);
+  playing = false; renderPlayState(); updateArm(true);
+  const { app, S, cx, cy } = geom(), VS = S * .96;
+  const src = srcEl.getBoundingClientRect(), ss = src.width / S;
+  const discEl = $("disc"), cardEl = $("coverCard");
+  $("covers").scrollLeft = 0;
+  const dr = discEl.getBoundingClientRect(), cr = cardEl.getBoundingClientRect();
+  const vc = discEl.cloneNode(true); vc.removeAttribute("id"); vc.querySelectorAll("[id]").forEach(n => n.removeAttribute("id"));
+  vc.style.cssText = `position:absolute;left:0;top:0;width:${VS}px;height:${VS}px;visibility:visible`;
+  vc.querySelector(".vinyl").classList.remove("go");
+  vc.querySelector(".vinyl").style.setProperty("--vc", $("vinyl").style.getPropertyValue("--vc"));
+  const V = document.createElement("div"); V.className = "fl"; V.style.width = V.style.height = VS + "px"; V.appendChild(vc);
+  const F = document.createElement("div"); F.className = "fl fl-sleeve"; F.style.width = F.style.height = S + "px";
+  F.innerHTML = `<div class="face" style="background-image:url('${img(al,true)}')"></div>`;
+  const fl = $("flight"); fl.innerHTML = ""; fl.append(V, F);
+  const sx = src.left - app.left, sy = src.top - app.top;
+  const up = { x: cx + S*.02, y: cy - S*.62 }, low = cy + S*.2;
+  const fSrc = atT(sx, sy, ss), fUp = atT(cx, cy, 1), fLow = atT(cx, low, 1),
+        fCard = atT(cr.left - app.left, cr.top - app.top, cr.width / S, "rotate(-1.2deg)");
+  const vSrc = atT(sx + S*.02*ss, sy + S*.02*ss, ss), vIn = atT(cx + S*.02, cy + S*.02), vUp = atT(up.x, up.y),
+        vDisc = atT(dr.left - app.left, dr.top - app.top, dr.width / VS);
+  F.style.transform = fSrc; V.style.transform = vSrc;
+  srcEl.style.visibility = "hidden"; discEl.style.visibility = "hidden"; cardEl.style.visibility = "hidden";
+  try{
+    // a metà strada compare il giradischi e parte la musica
+    setTimeout(() => { view("player"); playAlbum(al, trackIdx); }, 480 + 560);
+    await Promise.all([
+      path(V, [[vSrc, 0], [vIn, 480], [vUp, 620], [vDisc, 760]], 1860),
+      path(F, [[fSrc, 0], [fUp, 480], [fLow, 620], [fCard, 820]], 1920)
+    ]);
+  }catch(e){}
+  discEl.style.visibility = ""; cardEl.style.visibility = ""; srcEl.style.visibility = "";
+  fl.innerHTML = ""; busy = false;
 }
 async function toTurntable(trackIdx = 0){
   if(busy || !L) return; busy = true;
