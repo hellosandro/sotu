@@ -846,10 +846,11 @@ async function goPlay(i){
   try{
     // a metà strada compare il giradischi e parte la musica
     // tutto insieme: mentre la copertina si avvicina il vinile comincia già a uscire dall'alto
-    setTimeout(() => { view("player"); playAlbum(al, trackIdx); }, 700);
+    // il vinile comincia a uscire mentre la copertina si avvicina, esce del tutto, poi va sul piatto
+    setTimeout(() => { view("player"); playAlbum(al, trackIdx); }, 1000);
     await Promise.all([
-      glide(V, [[vSrc, 0], [vUp, 760], [vDisc, 840]], 1600),
-      glide(F, [[fSrc, 0], [fLow, 760], [fCard, 900]], 1660)
+      path(V, [[vSrc, 0], [vUp, 860], [vDisc, 860]], 1720),
+      path(F, [[fSrc, 0], [fUp, 520], [fLow, 460], [fCard, 820]], 1800)
     ]);
   }catch(e){}
   discEl.style.visibility = ""; cardEl.style.visibility = ""; srcEl.style.visibility = "";
@@ -930,10 +931,10 @@ async function stowRecord(){
     // al contrario dell'andata, senza fermate: il vinile rientra mentre la copertina torna nella cassa
     const rs = r ? r.width / S : 1;
     const vEnd = r ? atT(r.left - app.left + S*.02*rs, r.top - app.top + S*.02*rs, rs) : atT(cx + S*.02, app.height + 40);
-    setTimeout(() => view(i >= 0 || albums.length ? "crate" : "lists"), 900);
+    setTimeout(() => view(i >= 0 || albums.length ? "crate" : "lists"), 820);
     await Promise.all([
-      glide(V, [[dPos, 0], [vUp, 840], [vEnd, 760]], 1600),
-      glide(F, [[cPos, 0], [fLow, 900], [fEnd, 760]], 1660)]);
+      path(V, [[dPos, 0], [vUp, 860], [vEnd, 860]], 1720).then(() => V.style.opacity = 0),
+      path(F, [[cPos, 0], [fLow, 820], [fUp, 460], [fEnd, 520]], 1800)]);
     V.remove();
     if(dst) dst.style.visibility = "";
   }catch(e){}
