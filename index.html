@@ -54,6 +54,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- elenco ---------- */
 #lists .top,#crate .top{background:linear-gradient(rgba(0,0,0,.92),rgba(0,0,0,.6) 70%,transparent)}
 #crate .top{z-index:6}
+.brand-logo{display:block;width:200px;height:auto;margin:14px 0 6px -2px}
 .listwrap{position:absolute;left:0;right:0;top:0;padding-top:calc(env(safe-area-inset-top) + 8px);bottom:0;overflow-y:auto;
      -webkit-overflow-scrolling:touch;padding:8px 16px calc(env(safe-area-inset-bottom) + 24px)}
 .lst{list-style:none}
@@ -195,8 +196,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .face.back.scroll{overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch}
 
 /* ---------- accesso ---------- */
-#gate{display:flex;flex-direction:column;justify-content:center;padding:32px 28px;background:rgba(10,6,3,.55)}
-#gate .logo{font-family:"VT323",monospace;font-size:64px;line-height:1;color:var(--lcd);text-shadow:0 0 14px rgba(93,255,122,.5)}
+#gate{display:flex;flex-direction:column;justify-content:center;padding:32px 28px;background:#000}
+#gate .logo{display:block;width:min(78vw,300px);height:auto;margin:0 0 40px -3px}
 #gate .sub{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin:10px 0 36px}
 #gate p{color:#cfc7b8;max-width:32ch;line-height:1.5;margin-bottom:22px}
 #gate label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
@@ -222,8 +223,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- ACCESSO -->
   <section class="view" id="gate">
-    <div class="logo">SOTU</div>
-    <div class="sub">Sound of the Universe · vinyl player</div>
+    <img class="logo" src="sotu-logo.svg" alt="SOTU — Sound of the Universe">
     <div class="sec" id="gSetup">
       <p>Prima volta qui. Incolla il Client ID della tua app Spotify.</p>
       <label for="cid">Client ID</label>
@@ -240,7 +240,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- ELENCO -->
   <section class="view" id="lists">
-    <div class="listwrap"><ul class="lst" id="lst"></ul></div>
+    <div class="listwrap"><img class="brand-logo" src="sotu-logo.svg" alt="SOTU — Sound of the Universe"><ul class="lst" id="lst"></ul></div>
   </section>
 
   <!-- COVER FLOW -->
