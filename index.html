@@ -215,6 +215,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
        background:rgba(18,16,14,.95);border:1px solid #3a332b;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.4;
        color:#e9e2d4;transform:translateY(20px);opacity:0;visibility:hidden;pointer-events:none;
        transition:transform .35s ease,opacity .35s ease,visibility 0s .35s}
+#toast .tact{display:block;margin-top:10px;padding:9px 16px;border-radius:999px;background:#fff;color:#000;font-weight:600;font-size:14px}
 #toast.on{transform:none;opacity:1;visibility:visible;pointer-events:auto;transition:transform .35s ease,opacity .35s ease}
 .loading{position:absolute;inset:0;display:grid;place-items:center;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;color:#fff}
 .still .sleeve,.still .sleeve i::after{transition:none!important}
@@ -324,8 +325,10 @@ const store = {
 /* ---------- viste ---------- */
 function view(id){ ["gate","lists","crate","player"].forEach(v => $(v).classList.toggle("on", v === id)); }
 let toastT;
-function toast(t, ms = 5000){ const el = $("toast"); el.textContent = t; el.classList.add("on");
-  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), ms); }
+function toast(t, ms = 5000, action){ const el = $("toast"); el.textContent = t;
+  if(action){ const b = document.createElement("button"); b.className = "tact"; b.textContent = action.label;
+    b.onclick = () => { el.classList.remove("on"); action.run(); }; el.appendChild(b); }
+  el.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), ms); }
 function setLcd(el, text){
   const span = el.querySelector("span"); span.textContent = text; span.classList.remove("run");
   requestAnimationFrame(() => {
@@ -364,8 +367,15 @@ async function getToken(){
   return store.get("access_token");
 }
 async function api(path, opts = {}){
-  const r = await fetch(API + path, { ...opts, headers: { Authorization: "Bearer " + await getToken(),
-    ...(opts.body ? {"Content-Type": "application/json"} : {}) } });
+  let r;
+  for(let k = 0; ; k++){
+    r = await fetch(API + path, { ...opts, headers: { Authorization: "Bearer " + await getToken(),
+      ...(opts.body ? {"Content-Type": "application/json"} : {}) } });
+    // Spotify a volte risponde "Bad gateway" o simili per un attimo: si riprova da soli
+    if(r.status >= 500 && k < 2){ await new Promise(res => setTimeout(res, 700 * (k + 1))); continue; }
+    break;
+  }
+  if(r.status >= 500){ const e = new Error("Spotify non risponde in questo momento. Riprova tra qualche secondo."); e.status = r.status; throw e; }
   if(r.status === 204 || r.status === 202) return null;
   const txt = await r.text(); let j = null; try{ j = txt ? JSON.parse(txt) : null }catch(e){}
   if(!r.ok){ const e = new Error(j?.error?.message || ("Errore " + r.status)); e.status = r.status; throw e; }
@@ -633,7 +643,7 @@ async function pickDevice(){
   if(app) return app.id;
   if(sdkDeviceId) return sdkDeviceId;
   const d = devices.find(x => x.is_active) || (MOBILE && devices.find(x => x.type === "Smartphone")) || devices.find(x => x.name !== "SOTU") || devices[0];
-  if(!d) throw new Error("Apri l'app Spotify sul telefono, fai partire un brano qualsiasi, poi torna qui e tocca di nuovo play.");
+  if(!d){ const e = new Error("L'app Spotify è addormentata: aprila un attimo e torna qui, il disco parte da solo."); e.code = "NODEVICE"; throw e; }
   return d.id;
 }
 async function playAlbum(al, idx = 0){
@@ -650,8 +660,26 @@ async function playAlbum(al, idx = 0){
     noShuffle();
     playing = true; progress = 0; duration = tracksOf(al)[idx]?.duration_ms || 1; progT = Date.now(); renderPlayState();
     setTimeout(poll, 1200);
-  }catch(e){ playing = false; renderPlayState(); toast(e.message); }
+  }catch(e){
+    playing = false; renderPlayState();
+    if(e.code === "NODEVICE" || e.status === 404){
+      pendingPlay = { al, idx };
+      toast("L'app Spotify è addormentata: aprila un attimo e torna qui, il disco parte da solo.", 12000,
+        { label: "Apri Spotify", run: () => { location.href = "spotify:"; } });
+    } else toast(e.message);
+  }
 }
+/* quando torni da Spotify, il disco in attesa riparte da solo */
+let pendingPlay = null;
+document.addEventListener("visibilitychange", async () => {
+  if(document.hidden || !pendingPlay) return;
+  const p = pendingPlay; pendingPlay = null;
+  for(let k = 0; k < 4; k++){            // l'app Spotify impiega qualche istante a farsi vedere
+    await new Promise(r => setTimeout(r, 900));
+    try{ const { devices } = await api("/me/player/devices"); if(devices.some(d => d.name !== "SOTU")) break; }catch(e){}
+  }
+  if(nowAlbum === p.al) playAlbum(p.al, p.idx);
+});
 async function togglePlay(){
   if(!nowAlbum) return;
   if(DEMO){ playing = !playing; progT = Date.now(); renderPlayState(); return; }
